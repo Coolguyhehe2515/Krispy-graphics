@@ -20,9 +20,9 @@ jobs:
       - name: Install Lazurite
         run: pip install lazurite
 
-      - name: Download shaderc
+      - name: Download shaderc (Linux binary)
         run: |
-          curl -L -o shaderc https://github.com/veka0/bgfx-mcbe/releases/download/binaries/shadercRelease
+          curl -L -o shaderc https://github.com/devendrn/newb-shader/releases/latest/download/shaderc-linux-x64
           chmod +x shaderc
 
       - name: Get short SHA
