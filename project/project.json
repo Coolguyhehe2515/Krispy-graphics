@@ -1,0 +1,14 @@
+{
+  "base_profile": {
+    "platforms": [
+      "ESSL_300",
+      "ESSL_310"
+    ],
+    "merge_source": ["../vanilla"]
+  },
+  "profiles": {
+    "android": {
+      "platforms": ["ESSL_300", "ESSL_310"]
+    }
+  }
+}
