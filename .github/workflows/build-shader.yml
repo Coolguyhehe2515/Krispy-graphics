@@ -33,7 +33,7 @@ jobs:
         run: |
           lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
 
-      - name: Copy compiled materials into pack
+      - name: Assemble resource pack
         run: |
           mkdir -p pack/renderer/materials
           cp ./build/materials/*.material.bin pack/renderer/materials/
@@ -41,10 +41,11 @@ jobs:
       - name: Zip pack as mcpack
         run: |
           cd pack
-          zip -r ../shader-${{ steps.vars.outputs.sha_short }}.mcpack . -x ".*"
+          zip -r ../LumenGraphics-${{ steps.vars.outputs.sha_short }}.mcpack . -x ".*"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: shader-build-${{ steps.vars.outputs.sha_short }}
-          path: shader-${{ steps.vars.outputs.sha_short }}.mcpack
+          name: LumenGraphics-${{ steps.vars.outputs.sha_short }}
+          path: LumenGraphics-${{ steps.vars.outputs.sha_short
+          }}.mcpack
