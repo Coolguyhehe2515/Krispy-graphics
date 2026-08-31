@@ -1,0 +1,17 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Lumen Graphics",
+    "description": "Lightweight native RenderDragon shader",
+    "uuid": "b1a2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 40]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "f6e5d4c3-b2a1-4f6e-9d8c-7b6a5f4e3d2c",
+      "version": [0, 1, 0]
+    }
+  ]
+}
