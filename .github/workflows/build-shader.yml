@@ -1,0 +1,50 @@
+name: Build Shader Pack
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Lazurite
+        run: pip install lazurite
+
+      - name: Download shaderc (Linux binary)
+        run: |
+          curl -L -o shaderc https://github.com/veka0/bgfx-mcbe/releases/download/binaries/shadercRelease
+          chmod +x shaderc
+
+      - name: Get short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build materials with Lazurite
+        run: |
+          lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
+
+      - name: Copy compiled materials into pack
+        run: |
+          mkdir -p pack/renderer/materials
+          cp ./build/materials/*.material.bin pack/renderer/materials/
+
+      - name: Zip pack as mcpack
+        run: |
+          cd pack
+          zip -r ../shader-${{ steps.vars.outputs.sha_short }}.mcpack . -x ".*"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shader-build-${{ steps.vars.outputs.sha_short }}
+          path: shader-${{ steps.vars.outputs.sha_short }}.mcpack
