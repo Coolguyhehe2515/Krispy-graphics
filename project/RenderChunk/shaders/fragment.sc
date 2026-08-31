@@ -21,8 +21,8 @@
 * - SEASONS__ON
 */
 
-precision highp float;
 $input v_color0, v_fog, v_lightmapUV, v_texcoord0, v_worldPos
+precision highp float;
 #include "bgfx_shader.sh"
 struct NoopSampler {
     int noop;
