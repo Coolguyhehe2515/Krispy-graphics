@@ -155,7 +155,13 @@ void StandardTemplate_InvokeVertexOverrideFunction(StandardVertexInput vertInput
 void StandardTemplate_InvokeLightingVertexFunction(VertexInput vertInput, inout VertexOutput vertOutput, vec3 worldPosition);
 
 void computeLighting_RenderChunk_Vertex(VertexInput vInput, inout VertexOutput vOutput, vec3 worldPosition) {
-    vOutput.lightmapUV = vInput.lightmapUV;
+    // Decode packed lightmap UV (1.26.x vanilla format).
+    // a_texcoord1 packs block light + sky light as two 4-bit nibbles inside one 16-bit value.
+    uvec2 packedLight = uvec2(round(vInput.lightmapUV * 65535.0));
+    uint lightBits = packedLight.y;
+    float blockLight = float((lightBits >> 4u) & 15u) * (1.0 / 15.0);
+    float skyLight = float(lightBits & 15u) * (1.0 / 15.0);
+    vOutput.lightmapUV = vec2(blockLight, skyLight);
 }
 
 void StandardTemplate_VertShared(VertexInput vertInput, inout VertexOutput vertOutput) {
