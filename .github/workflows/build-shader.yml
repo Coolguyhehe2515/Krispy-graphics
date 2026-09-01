@@ -34,8 +34,9 @@ jobs:
 
       - name: Debug material sampler config
         run: |
-          lazurite serialize ./build/materials/RenderChunk.material.bin -o debug_output.json
-          cat debug_output.json
+          mkdir -p debug_output
+          lazurite serialize ./build/materials/RenderChunk.material.bin -o debug_output
+          cat debug_output/RenderChunk.material.json
 
       - name: Assemble resource pack
         run: |
