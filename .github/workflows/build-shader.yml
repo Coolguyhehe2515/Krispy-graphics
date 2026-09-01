@@ -32,7 +32,7 @@ jobs:
       - name: Build materials with Lazurite
         run: lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
 
-        - name: Debug material sampler config
+      - name: Debug material sampler config
         run: |
           lazurite serialize ./build/materials/RenderChunk.material.bin -o debug_output.json
           cat debug_output.json
