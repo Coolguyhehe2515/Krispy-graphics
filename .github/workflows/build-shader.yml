@@ -30,13 +30,7 @@ jobs:
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Build materials with Lazurite
-        run: lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
-
-      - name: Debug material sampler config
-        run: |
-          mkdir -p debug_output
-          lazurite serialize ./build/materials/RenderChunk.material.bin -o debug_output
-          cat debug_output/RenderChunk.material.json
+        run: lazurite build ./project -p android --shaderc ./shaderc --shaderc-args -i project/lumen_graphics -o ./build/materials
 
       - name: Assemble resource pack
         run: |
