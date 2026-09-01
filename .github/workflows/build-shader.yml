@@ -29,8 +29,16 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+      - name: Sync shared settings.h into each material's shaders folder
+        run: |
+          for dir in project/*/shaders; do
+            if [ -d "$dir" ]; then
+              cp project/lumen_graphics/settings.h "$dir/settings.h"
+            fi
+          done
+
       - name: Build materials with Lazurite
-        run: lazurite build ./project -p android --shaderc ./shaderc --shaderc-args=-i project/lumen_graphics -o ./build/materials
+        run: lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
 
       - name: Assemble resource pack
         run: |
