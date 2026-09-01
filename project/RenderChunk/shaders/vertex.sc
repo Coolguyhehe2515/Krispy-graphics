@@ -6,6 +6,7 @@ $input i_data1, i_data2, i_data3
 $output v_color0, v_fog, v_lightmapUV, v_texcoord0, v_worldPos
 
 #include "bgfx_shader.sh"
+#include "settings.h"
 
 uniform vec4 FogAndDistanceControl;
 uniform vec4 FogColor;
@@ -110,10 +111,10 @@ float RenderChunkVert(StandardVertexInput stdInput, inout VertexOutput vertOutpu
     #ifdef ALPHA_TEST_PASS
     float waveTime = ViewPositionAndTime.w;
     float heightFrac = fract(stdInput.worldPos.y + 0.001);
-    float waveStrength = heightFrac * 0.08;
-    float wave = sin(waveTime * 2.0 + stdInput.worldPos.x * 1.5 + stdInput.worldPos.z * 1.5);
+    float waveStrength = heightFrac * NL_WAVE_AMPLITUDE;
+    float wave = sin(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x * NL_WAVE_FREQ + stdInput.worldPos.z * NL_WAVE_FREQ);
     stdInput.worldPos.x += wave * waveStrength;
-    stdInput.worldPos.z += cos(waveTime * 2.0 + stdInput.worldPos.x) * waveStrength * 0.5;
+    stdInput.worldPos.z += cos(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x) * waveStrength * 0.5;
     #endif
 
     vertOutput.position = jitterVertexPosition(stdInput.worldPos);
