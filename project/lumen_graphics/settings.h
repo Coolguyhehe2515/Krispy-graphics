@@ -17,9 +17,15 @@
 #define NL_SUNLIGHT_BOOST 0.15   // Strength of direct sunlight added on top of lightmap
 
 // ---------------------------------------------------
-// Cloud depth layers (Clouds material) - NOT YET IMPLEMENTED
-// Placeholder only, values unused until Clouds.sc work begins.
+// Cloud rendering (Clouds material, Transparent pass)
 // ---------------------------------------------------
-// #define NL_CLOUD_LAYER_COUNT 2
-// #define NL_CLOUD_PARALLAX_SPEED_1 1.0
-// #define NL_CLOUD_PARALLAX_SPEED_2 0.6
+#define NL_CLOUD_SCROLL_SPEED 0.02   // How fast the pattern drifts with worldPos
+#define NL_CLOUD_SCALE 25.0          // Overall pattern density
+#define NL_CLOUD_ITERATIONS 5        // Layer count — higher = thicker clouds, more cost
+#define NL_CLOUD_CLUSTER_SIZE 4.93   // Cluster grouping size
+#define NL_CLOUD_THRESHOLD 0.725     // Coverage threshold — higher = fewer clouds
+#define NL_CLOUD_CELL_SIZE 0.6       // Individual puff size
+#define NL_CLOUD_RIM_OFFSET 0.2      // Rim/edge detection thickness
+#define NL_CLOUD_RIM_BRIGHTNESS 2.0  // Rim highlight brightness multiplier
+#define NL_CLOUD_RIM_STRENGTH 0.6    // How strongly rim highlight blends in
+#define NL_CLOUD_SHADE_STRENGTH 0.2  // Self-shading darkness on cloud undersides
