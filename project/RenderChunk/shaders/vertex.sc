@@ -96,6 +96,17 @@ float RenderChunkVert(StandardVertexInput stdInput, inout VertexOutput vertOutpu
     float fogIntensity = calculateFogIntensityFadedVanilla(cameraDepth, FogAndDistanceControl.z, FogAndDistanceControl.x, FogAndDistanceControl.y, RenderChunkFogAlpha.x);
     vertOutput.fog = vec4(FogColor.rgb, fogIntensity);
 
+    // Decode packed UV coordinates (1.26.x vanilla vertex format).
+    // a_texcoord0 is fixed-point encoded, not a raw UV — must unpack before use.
+    uvec2 packedUV = uvec2(round(stdInput.vertInput.texcoord0 * 65535.0));
+    vec2 decodedUV = vec2(
+        float((packedUV.x & 32767u) << uint(1)),
+        float((packedUV.y & 32767u) << uint(1))
+    ) * vec2(1.525902189314365386962890625e-05);
+    decodedUV.x += (3.0517578125e-05 * ((2.0 * float((packedUV.x & 32768u) >> uint(15))) - 1.0));
+    decodedUV.y += (3.0517578125e-05 * ((2.0 * float((packedUV.y & 32768u) >> uint(15))) - 1.0));
+    vertOutput.texcoord0 = decodedUV;
+
     #ifdef ALPHA_TEST_PASS
     float waveTime = ViewPositionAndTime.w;
     float heightFrac = fract(stdInput.worldPos.y + 0.001);
@@ -151,7 +162,6 @@ void StandardTemplate_VertShared(VertexInput vertInput, inout VertexOutput vertO
     StandardVertexInput stdInput;
     stdInput.vertInput = vertInput;
     StandardTemplate_VertSharedTransform(stdInput, vertOutput);
-    vertOutput.texcoord0 = vertInput.texcoord0;
     vertOutput.color0 = vertInput.color0;
     StandardTemplate_InvokeVertexOverrideFunction(stdInput, vertOutput);
     StandardTemplate_InvokeLightingVertexFunction(vertInput, vertOutput, stdInput.worldPos);
