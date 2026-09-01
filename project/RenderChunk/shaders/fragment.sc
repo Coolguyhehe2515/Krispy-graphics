@@ -24,6 +24,8 @@
 $input v_color0, v_fog, v_lightmapUV, v_texcoord0, v_worldPos
 precision highp float;
 #include "bgfx_shader.sh"
+#include "settings.h"
+
 struct NoopSampler {
     int noop;
 };
@@ -233,7 +235,10 @@ struct DirectionalLight {
 };
 
 vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput stdInput, StandardSurfaceOutput stdOutput, DirectionalLight primaryLight) {
-    return textureSample(s_LightMapTexture, stdInput.lightmapUV).rgb * stdOutput.Albedo;
+    vec3 lightmapColor = textureSample(s_LightMapTexture, stdInput.lightmapUV).rgb;
+    float skyExposure = stdInput.lightmapUV.y;
+    vec3 sunlightBoost = primaryLight.Intensity * skyExposure * NL_SUNLIGHT_BOOST;
+    return (lightmapColor + sunlightBoost) * stdOutput.Albedo;
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
 void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
