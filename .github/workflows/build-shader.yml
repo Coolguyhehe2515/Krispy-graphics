@@ -29,11 +29,12 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Sync shared settings.h into each material's shaders folder
+      - name: Sync shared files into each material's shaders folder
         run: |
           for dir in project/*/shaders; do
             if [ -d "$dir" ]; then
               cp project/lumen_graphics/settings.h "$dir/settings.h"
+              cp project/lumen_graphics/bgfx_shader.sh "$dir/bgfx_shader.sh"
             fi
           done
 
