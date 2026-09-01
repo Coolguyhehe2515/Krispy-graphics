@@ -14,7 +14,7 @@
 // ---------------------------------------------------
 // Directional lighting boost (RenderChunk fragment)
 // ---------------------------------------------------
-#define NL_SUNLIGHT_BOOST 0.15   // Strength of direct sunlight added on top of lightmap
+#define NL_SUNLIGHT_BOOST 0.0   // Strength of direct sunlight added on top of lightmap
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
