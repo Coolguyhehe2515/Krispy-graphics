@@ -30,7 +30,7 @@ jobs:
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Build materials with Lazurite
-        run: lazurite build ./project -p android --shaderc ./shaderc --shaderc-args -i project/lumen_graphics -o ./build/materials
+        run: lazurite build ./project -p android --shaderc ./shaderc --shaderc-args=-i project/lumen_graphics -o ./build/materials
 
       - name: Assemble resource pack
         run: |
