@@ -8,9 +8,6 @@ $output v_color0, v_texcoord0, v_worldPos
 #include "bgfx_shader.sh"
 #include "settings.h"
 
-#ifdef INSTANCING__OFF
-uniform mat4 u_model[4];
-#endif
 uniform vec4 CloudColor;
 uniform vec4 DistanceControl;
 uniform vec4 SubPixelOffset;
