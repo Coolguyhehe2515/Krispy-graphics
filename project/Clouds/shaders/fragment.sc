@@ -67,5 +67,5 @@ void main() {
     vec3 rimColor = v_color0.rgb * NL_CLOUD_RIM_BRIGHTNESS;
     vec3 cloudColor = mix(v_color0.rgb, rimColor, cloud.b * NL_CLOUD_RIM_STRENGTH);
 
-    gl_FragColor = vec4(cloudColor, cloudAlpha);
+    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); // debug: solid magenta, always visible
 }
