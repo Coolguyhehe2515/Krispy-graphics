@@ -238,18 +238,22 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
 
-    // Sun/moon contribution — primaryLight.Intensity already reflects time of day via the engine.
-    vec3 skyLighting = primaryLight.Intensity * skyLight;
+    // Use sun direction (not raw intensity magnitude) to judge day/night —
+    // sidesteps any scaling uncertainty in LightDiffuseColorAndIlluminance.
+    float sunHeight = normalize(LightWorldSpaceDirection.xyz).y;
+    float dayFactor = clamp(sunHeight * 4.0 + 0.3, 0.0, 1.0);
 
-    // Warm torch light from the block-light channel.
+    vec3 daySkyColor = vec3(1.0, 1.0, 1.0);
+    vec3 nightSkyColor = vec3(0.05, 0.06, 0.09);
+    vec3 skyColor = mix(nightSkyColor, daySkyColor, dayFactor);
+
+    vec3 skyLighting = skyColor * skyLight;
+
     vec3 torchColor = vec3(1.0, 0.65, 0.35);
     vec3 torchLighting = torchColor * blockLight * NL_TORCH_INTENSITY;
 
-    // Small flat floor so fully dark areas aren't pure black.
-    vec3 ambientFloor = vec3_splat(NL_MIN_AMBIENT);
-
-    vec3 light = skyLighting + torchLighting + ambientFloor;
-    return light * stdOutput.Albedo;
+    vec3 light = skyLighting + torchLighting + vec3_splat(NL_MIN_AMBIENT);
+    return light * stdOutput.Albedo
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
 void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
