@@ -98,14 +98,20 @@ float RenderChunkVert(StandardVertexInput stdInput, inout VertexOutput vertOutpu
     vertOutput.fog = vec4(FogColor.rgb, fogIntensity);
 
     // Decode packed UV coordinates (1.26.x vanilla vertex format).
-    // a_texcoord0 is fixed-point encoded, not a raw UV — must unpack before use.
-    uvec2 packedUV = uvec2(round(stdInput.vertInput.texcoord0 * 65535.0));
-    vec2 decodedUV = vec2(
-        float((packedUV.x & 32767u) << uint(1)),
-        float((packedUV.y & 32767u) << uint(1))
-    ) * vec2(1.525902189314365386962890625e-05);
-    decodedUV.x += (3.0517578125e-05 * ((2.0 * float((packedUV.x & 32768u) >> uint(15))) - 1.0));
-    decodedUV.y += (3.0517578125e-05 * ((2.0 * float((packedUV.y & 32768u) >> uint(15))) - 1.0));
+    // Uses fract/mod/floor only — avoids uint bitwise ops (unreliable on some Mali GPUs).
+    float rawUx = round(stdInput.vertInput.texcoord0.x * 65535.0);
+    float rawUy = round(stdInput.vertInput.texcoord0.y * 65535.0);
+
+    float low15X = mod(rawUx, 32768.0);
+    float low15Y = mod(rawUy, 32768.0);
+    float signX = floor(rawUx / 32768.0);
+    float signY = floor(rawUy / 32768.0);
+
+    vec2 decodedUV;
+    decodedUV.x = (low15X * 2.0) * 1.525902189314365386962890625e-05;
+    decodedUV.y = (low15Y * 2.0) * 1.525902189314365386962890625e-05;
+    decodedUV.x += 3.0517578125e-05 * (2.0 * signX - 1.0);
+    decodedUV.y += 3.0517578125e-05 * (2.0 * signY - 1.0);
     vertOutput.texcoord0 = decodedUV;
 
     #ifdef ALPHA_TEST_PASS
@@ -156,11 +162,11 @@ void StandardTemplate_InvokeLightingVertexFunction(VertexInput vertInput, inout 
 
 void computeLighting_RenderChunk_Vertex(VertexInput vInput, inout VertexOutput vOutput, vec3 worldPosition) {
     // Decode packed lightmap UV (1.26.x vanilla format).
-    // a_texcoord1 packs block light + sky light as two 4-bit nibbles inside one 16-bit value.
-    uvec2 packedLight = uvec2(round(vInput.lightmapUV * 65535.0));
-    uint lightBits = packedLight.y;
-    float blockLight = float((lightBits >> 4u) & 15u) * (1.0 / 15.0);
-    float skyLight = float(lightBits & 15u) * (1.0 / 15.0);
+    // Uses fract/mod/floor only — avoids uint bitwise ops (unreliable on some Mali GPUs).
+    float rawLy = round(vInput.lightmapUV.y * 65535.0);
+    float lowByte = mod(rawLy, 256.0);
+    float skyLight = mod(lowByte, 16.0) / 15.0;
+    float blockLight = floor(lowByte / 16.0) / 15.0;
     vOutput.lightmapUV = vec2(blockLight, skyLight);
 }
 
