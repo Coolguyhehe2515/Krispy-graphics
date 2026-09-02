@@ -63,6 +63,8 @@ If you want to change actual rendering behavior (not just tunable values), the r
 
 - `project/RenderChunk/shaders/vertex.sc` / `fragment.sc` — terrain, lighting, plant waving
 - `project/Clouds/shaders/vertex.sc` / `fragment.sc` — cloud rendering
+- `project/Sky/shaders/vertex.sc` /
+`fragment.sc` - sky gradient
 
 These are BGFX shader (`.sc`) files compiled via Lazurite + shaderc, not raw GLSL — see [Lazurite's docs](https://veka0.github.io/lazurite/) if you're new to this format.
 
