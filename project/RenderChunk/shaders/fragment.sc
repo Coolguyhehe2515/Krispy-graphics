@@ -301,7 +301,7 @@ void StandardTemplate_Opaque_Frag(FragmentInput fragInput, inout FragmentOutput 
     primaryLight.Intensity = LightDiffuseColorAndIlluminance.rgb * LightDiffuseColorAndIlluminance.w;
     CompositingOutput compositingOutput;
     compositingOutput.mLitColor = computeLighting_RenderChunk(fragInput, surfaceInput, surfaceOutput, primaryLight);
-fragOutput.Color0 = vec4(surfaceInput.lightmapUV.x, surfaceInput.lightmapUV.y, 0.0, 1.0); // DEBUG
+fragOutput.Color0 = vec4(textureSample(s_LightMapTexture, surfaceInput.lightmapUV).rgb, 1.0); // DEBUG: raw lightmap texture output
 // fragOutput.Color0 = standardComposite(surfaceOutput, compositingOutput);
     RenderChunkApplyFog(fragInput, surfaceInput, surfaceOutput, fragOutput);
 }
