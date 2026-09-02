@@ -235,10 +235,21 @@ struct DirectionalLight {
 };
 
 vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput stdInput, StandardSurfaceOutput stdOutput, DirectionalLight primaryLight) {
-    vec3 lightmapColor = textureSample(s_LightMapTexture, stdInput.lightmapUV).rgb;
-    float skyExposure = stdInput.lightmapUV.y;
-    vec3 sunlightBoost = primaryLight.Intensity * skyExposure * NL_SUNLIGHT_BOOST;
-    return (lightmapColor + sunlightBoost) * stdOutput.Albedo;
+    float skyLight = stdInput.lightmapUV.y;
+    float blockLight = stdInput.lightmapUV.x;
+
+    // Sun/moon contribution — primaryLight.Intensity already reflects time of day via the engine.
+    vec3 skyLighting = primaryLight.Intensity * skyLight;
+
+    // Warm torch light from the block-light channel.
+    vec3 torchColor = vec3(1.0, 0.65, 0.35);
+    vec3 torchLighting = torchColor * blockLight * NL_TORCH_INTENSITY;
+
+    // Small flat floor so fully dark areas aren't pure black.
+    vec3 ambientFloor = vec3_splat(NL_MIN_AMBIENT);
+
+    vec3 light = skyLighting + torchLighting + ambientFloor;
+    return light * stdOutput.Albedo;
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
 void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
