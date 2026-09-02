@@ -12,10 +12,11 @@
 #define NL_WAVE_FREQ 1.5         // Spatial frequency of the sway pattern
 
 // ---------------------------------------------------
-// Directional lighting boost (RenderChunk fragment)
+// Overall lighting
 // ---------------------------------------------------
 #define NL_TORCH_INTENSITY 1.5
 #define NL_MIN_AMBIENT 0.03
+#define NL_SKY_BRIGHTNESS 1.8
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
