@@ -39,14 +39,30 @@
 #define NL_SKY_HORIZON_SHARPNESS 1.5  // Higher = zenith color holds longer before transitioning
 #define NL_SKY_EDGE_START 0.85        // Where the horizon edge-fade begins
 #define NL_SKY_EDGE_END 1.0           // Where it fully reaches horizon color
-#define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
+#define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade 
 
 // ---------------------------------------------------
 // Sky color palette (Sky material)
 // ---------------------------------------------------
-#define NL_SKY_DAY_COLOR   vec3(0.40, 0.65, 1.00)
-#define NL_SKY_NIGHT_COLOR vec3(0.02, 0.03, 0.08)
-#define NL_SKY_DAWN_COLOR  vec3(1.00, 0.55, 0.35)
-#define NL_SKY_DUSK_COLOR  vec3(0.85, 0.35, 0.45)
 
-#define NL_SKY_TWILIGHT_RANGE 0.35   // How wide the dawn/dusk transition zone is around the horizon
+// Day
+#define NL_SKY_DAY_ZENITH_COLOR   vec3(0.10, 0.45, 0.85)
+#define NL_SKY_DAY_HORIZON_COLOR  vec3(0.55, 0.75, 0.95)
+#define NL_SKY_DAY_EDGE_COLOR     vec3(0.75, 0.85, 0.92)
+
+// Night
+#define NL_SKY_NIGHT_ZENITH_COLOR   vec3(0.01, 0.02, 0.06)
+#define NL_SKY_NIGHT_HORIZON_COLOR  vec3(0.04, 0.05, 0.10)
+#define NL_SKY_NIGHT_EDGE_COLOR     vec3(0.06, 0.07, 0.12)
+
+// Dawn
+#define NL_SKY_DAWN_ZENITH_COLOR   vec3(0.35, 0.30, 0.55)
+#define NL_SKY_DAWN_HORIZON_COLOR  vec3(1.00, 0.55, 0.35)
+#define NL_SKY_DAWN_EDGE_COLOR     vec3(1.00, 0.70, 0.45)
+
+// Dusk
+#define NL_SKY_DUSK_ZENITH_COLOR   vec3(0.15, 0.35, 0.68)
+#define NL_SKY_DUSK_HORIZON_COLOR  vec3(1.0, 0.78, 0.55)
+#define NL_SKY_DUSK_EDGE_COLOR     vec3(1.0, 0.98, 0.85)
+
+#define NL_SKY_TWILIGHT_RANGE 0.35
