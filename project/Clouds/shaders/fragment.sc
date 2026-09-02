@@ -63,7 +63,7 @@ void main() {
 
     vec3 cloud = nl_cloudPattern(uv, t);
 
-    float cloudAlpha = clamp(cloud.r, 0.0, 1.0) * v_color0.a;
+    float cloudAlpha = clamp(cloud.r, 0.0, 1.0);
     vec3 rimColor = v_color0.rgb * NL_CLOUD_RIM_BRIGHTNESS;
     vec3 cloudColor = mix(v_color0.rgb, rimColor, cloud.b * NL_CLOUD_RIM_STRENGTH);
 
