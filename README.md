@@ -1,2 +1,81 @@
-# Lumen-graphics
-A native rd shader that i make for fun 
+# Lumen Graphics
+
+A native RenderDragon shader for Minecraft Bedrock Edition, built from scratch (not a fork) for the current Android RenderDragon pipeline.
+
+Lumen Graphics is heavily inspired by [**Newb Shader**](https://github.com/devendrn/newb-x-mcbe) by **devendrn** 
+
+## What's in this shader
+
+- Waving plants and foliage
+- Custom day/night lighting driven by sky/block light and fog color
+- Procedural noise-based clouds with parallax-style depth
+- Tunable settings — no need to touch shader code for common adjustments
+
+## Installing
+
+Stock Minecraft can't load custom `material.bin` files, so you'll need a loader app first.
+
+1. Install **MB Loader** from the Play Store: [Download here](https://play.google.com/store/apps/details?id=io.github.bambosan.mbloader&hl=en)
+2. Download the latest build from the [Actions](../../actions) tab (or a [Release](../../releases) if one's published).
+3. Import the pack into MB Loader's Minecraft install.
+4. Enable it under Global Resources or your world's resource pack list.
+
+## Building it yourself
+
+This repo builds automatically via GitHub Actions on every push to `main` — no local setup required. If you want to build manually:
+
+1. Install [Lazurite](https://veka0.github.io/lazurite/): `pip install lazurite`
+2. Grab a `shaderc` binary (Linux example: [devendrn/newb-shader releases](https://github.com/devendrn/newb-shader/releases))
+3. Run:
+   ```
+   lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
+   ```
+
+See `.github/workflows/build-shader.yml` for the exact build steps used in CI.
+
+## Making your own variant
+
+Want to tweak Lumen Graphics into your own thing? Here's the easiest path:
+
+### 1. Fork the repo
+
+Click **Fork** at the top of this page. This gives you your own copy with full edit access, and GitHub Actions will build it automatically on push — no extra setup needed.
+
+### 2. Start with `settings.h`
+
+Most visual tuning lives in one place: [`lumen_graphics/settings.h`](./lumen_graphics/settings.h). This file controls things like:
+
+- Wave speed, amplitude, and frequency for plants
+- Sky brightness, torch color, and torch intensity
+- Cloud density, scale, and rim highlight strength
+
+Change these values, push, and the next Actions build reflects your edits — no shader code required for most stylistic changes.
+
+### 3. Rename your fork (optional but recommended)
+
+If you're planning to publish your variant, update:
+- `pack/manifest.json` — change `"name"` and `"description"` under `header`, and generate new UUIDs (use any online UUID generator) so your pack doesn't conflict with the original Lumen Graphics install
+- This README — swap in your own name/credits at the top, while keeping the Newb Shader and Lumen Graphics attribution intact below
+
+### 4. Going further — editing shader logic
+
+If you want to change actual rendering behavior (not just tunable values), the relevant files are:
+
+- `project/RenderChunk/shaders/vertex.sc` / `fragment.sc` — terrain, lighting, plant waving
+- `project/Clouds/shaders/vertex.sc` / `fragment.sc` — cloud rendering
+
+These are BGFX shader (`.sc`) files compiled via Lazurite + shaderc, not raw GLSL — see [Lazurite's docs](https://veka0.github.io/lazurite/) if you're new to this format.
+
+### 5. Custom textures or pack icon
+
+Drop any custom textures, sounds, or a `pack_icon.png` into the `assets/` folder at the repo root. Everything in there gets copied straight into the final pack during the build — no `.yml` changes needed.
+
+## Credits
+
+- [**Newb Shader**](https://github.com/devendrn/newb-x-mcbe) by **devendrn** — primary inspiration 
+- [**Lazurite**](https://github.com/veka0/lazurite) by **veka0** — the shader build tool this project relies on
+- [**mcbe-shader-codebase**](https://github.com/veka0/mcbe-shader-codebase) by **veka0** — restored vanilla material reference
+
+## License
+
+*(Add your license here if you have one — MIT is a common choice for shader projects like this.)*
