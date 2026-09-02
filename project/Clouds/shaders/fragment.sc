@@ -59,7 +59,7 @@ vec3 nl_cloudPattern(vec2 uv, vec2 t) {
 
 void main() {
     vec2 t = v_worldPos.xz * NL_CLOUD_SCROLL_SPEED;
-    vec2 uv = v_texcoord0;
+    vec2 uv = v_worldPos.xz * 0.005;
 
     vec3 cloud = nl_cloudPattern(uv, t);
 
@@ -67,5 +67,5 @@ void main() {
     vec3 rimColor = v_color0.rgb * NL_CLOUD_RIM_BRIGHTNESS;
     vec3 cloudColor = mix(v_color0.rgb, rimColor, cloud.b * NL_CLOUD_RIM_STRENGTH);
 
-    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); // debug: solid magenta, always visible
+    gl_FragColor = vec4(cloudColor, cloudAlpha);
 }
