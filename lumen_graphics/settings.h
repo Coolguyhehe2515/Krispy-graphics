@@ -17,6 +17,7 @@
 #define NL_TORCH_INTENSITY 1.5
 #define NL_MIN_AMBIENT 0.03
 #define NL_SKY_BRIGHTNESS 1.8
+#define NL_TORCH_COLOR vec3(0.969,0.737,0.302)
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
