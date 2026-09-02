@@ -1,7 +1,7 @@
 /*
  * Lumen Graphics - settings.h
  * Central config for tunable values across the shader.
- * Include this in vertex.sc / fragment.sc files that need these values.
+ * if you are trying to make a variant include this in vertex.sc / fragment.sc files that need these values.
  */
 
 // ---------------------------------------------------
@@ -14,7 +14,8 @@
 // ---------------------------------------------------
 // Directional lighting boost (RenderChunk fragment)
 // ---------------------------------------------------
-#define NL_SUNLIGHT_BOOST 0.0   // Strength of direct sunlight added on top of lightmap
+#define NL_TORCH_INTENSITY 1.5
+#define NL_MIN_AMBIENT 0.03
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
