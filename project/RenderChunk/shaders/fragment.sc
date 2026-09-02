@@ -239,13 +239,7 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
 
-    float dayFactor = clamp(cos((TimeOfDay.x - 0.25) * 6.28318) * 1.3, 0.0, 1.0);
-
-    vec3 daySkyColor = vec3(1.0, 1.0, 1.0);
-    vec3 nightSkyColor = vec3(0.05, 0.06, 0.09);
-    vec3 skyColor = mix(nightSkyColor, daySkyColor, dayFactor);
-
-    vec3 skyLighting = skyColor * skyLight;
+    vec3 skyLighting = FogColor.rgb * skyLight * NL_SKY_BRIGHTNESS;
 
     vec3 torchColor = vec3(1.0, 0.65, 0.35);
     vec3 torchLighting = torchColor * blockLight * NL_TORCH_INTENSITY;
