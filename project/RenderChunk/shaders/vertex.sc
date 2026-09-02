@@ -17,6 +17,7 @@ uniform vec4 MaterialID;
 uniform vec4 RenderChunkFogAlpha;
 uniform vec4 SubPixelOffset;
 uniform vec4 ViewPositionAndTime;
+uniform vec4 TimeOfDay;
 vec4 ViewRect;
 mat4 Proj;
 mat4 View;
@@ -161,13 +162,8 @@ void StandardTemplate_InvokeVertexOverrideFunction(StandardVertexInput vertInput
 void StandardTemplate_InvokeLightingVertexFunction(VertexInput vertInput, inout VertexOutput vertOutput, vec3 worldPosition);
 
 void computeLighting_RenderChunk_Vertex(VertexInput vInput, inout VertexOutput vOutput, vec3 worldPosition) {
-    // Decode packed lightmap UV (1.26.x vanilla format).
-    // Uses fract/mod/floor only — avoids uint bitwise ops (unreliable on some Mali GPUs).
-    float rawLy = round(vInput.lightmapUV.y * 65535.0);
-    float lowByte = mod(rawLy, 256.0);
-    float skyLight = mod(lowByte, 16.0) / 15.0;
-    float blockLight = floor(lowByte / 16.0) / 15.0;
-    vOutput.lightmapUV = vec2(blockLight, skyLight);
+    // (avoids bitwise ops entirely, matches vanilla 1.26.x packing).
+    vOutput.lightmapUV = fract(vInput.lightmapUV.y * vec2(256.0, 4096.0));
 }
 
 void StandardTemplate_VertShared(VertexInput vertInput, inout VertexOutput vertOutput) {
