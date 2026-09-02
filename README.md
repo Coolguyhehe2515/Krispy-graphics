@@ -16,7 +16,7 @@ Lumen Graphics is heavily inspired by [**Newb Shader**](https://github.com/deven
 Stock Minecraft can't load custom `material.bin` files, so you'll need a loader app first.
 
 1. Install **MB Loader** from the Play Store: [Download here](https://play.google.com/store/apps/details?id=io.github.bambosan.mbloader&hl=en)
-2. Download the latest build from the [Actions](../../actions) tab (or a [Release](../../releases) if one's published).
+2. Download the latest build from the [Actions](../../actions)
 3. Import the pack into MB Loader's Minecraft install.
 4. Enable it under Global Resources or your world's resource pack list.
 
