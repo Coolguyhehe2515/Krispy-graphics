@@ -32,3 +32,21 @@
 #define NL_CLOUD_RIM_BRIGHTNESS 2.0  // Rim highlight brightness multiplier
 #define NL_CLOUD_RIM_STRENGTH 0.6    // How strongly rim highlight blends in
 #define NL_CLOUD_SHADE_STRENGTH 0.2  // Self-shading darkness on cloud undersides
+
+// ---------------------------------------------------
+// Sky rendering (Sky material)
+// ---------------------------------------------------
+#define NL_SKY_HORIZON_SHARPNESS 1.5  // Higher = zenith color holds longer before transitioning
+#define NL_SKY_EDGE_START 0.85        // Where the horizon edge-fade begins
+#define NL_SKY_EDGE_END 1.0           // Where it fully reaches horizon color
+#define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
+
+// ---------------------------------------------------
+// Sky color palette (Sky material)
+// ---------------------------------------------------
+#define NL_SKY_DAY_COLOR   vec3(0.40, 0.65, 1.00)
+#define NL_SKY_NIGHT_COLOR vec3(0.02, 0.03, 0.08)
+#define NL_SKY_DAWN_COLOR  vec3(1.00, 0.55, 0.35)
+#define NL_SKY_DUSK_COLOR  vec3(0.85, 0.35, 0.45)
+
+#define NL_SKY_TWILIGHT_RANGE 0.35   // How wide the dawn/dusk transition zone is around the horizon
