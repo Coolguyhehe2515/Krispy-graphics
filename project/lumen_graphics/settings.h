@@ -23,7 +23,7 @@
 #define NL_CLOUD_SCALE 25.0          // Overall pattern density
 #define NL_CLOUD_ITERATIONS 5        // Layer count — higher = thicker clouds, more cost
 #define NL_CLOUD_CLUSTER_SIZE 4.93   // Cluster grouping size
-#define NL_CLOUD_THRESHOLD 0.725     // Coverage threshold — higher = fewer clouds
+#define NL_CLOUD_THRESHOLD 0.250     // Coverage threshold — higher = fewer clouds
 #define NL_CLOUD_CELL_SIZE 0.6       // Individual puff size
 #define NL_CLOUD_RIM_OFFSET 0.2      // Rim/edge detection thickness
 #define NL_CLOUD_RIM_BRIGHTNESS 2.0  // Rim highlight brightness multiplier
