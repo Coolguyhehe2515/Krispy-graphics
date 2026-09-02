@@ -1,24 +1,27 @@
-$input v_color0, v_texcoord0, v_worldPos
+$input v_worldPos
 precision highp float;
 #include "bgfx_shader.sh"
 #include "settings.h"
 
 uniform vec4 FogColor;
-uniform vec4 SkyColor;
-uniform vec4 LightWorldSpaceDirection;
 
-void nl_skyPaletteColors(out vec3 zenithColor, out vec3 horizonColor, out vec3 edgeColor) {
-    vec3 sunDir = normalize(LightWorldSpaceDirection.xyz);
-    float elevation = sunDir.y;
+float nl_dayFactor(vec3 fogColor) {
+    // Derives day/night purely from vanilla's fog color — always reliable,
+    // avoids dependence on uniforms that don't behave consistently on this material.
+    float brightness = dot(fogColor, vec3(0.33, 0.33, 0.33));
+    return clamp((brightness - 0.05) * 3.0, 0.0, 1.0);
+}
 
-    float dayFactor = smoothstep(-0.05, 0.2, elevation);
-    float twilightFactor = 1.0 - smoothstep(0.0, NL_SKY_TWILIGHT_RANGE, abs(elevation));
+void nl_skyPaletteColors(vec3 fogColor, out vec3 zenithColor, out vec3 horizonColor, out vec3 edgeColor) {
+    float dayFactor = nl_dayFactor(fogColor);
 
-    // Heuristic split between dawn and dusk — flip sign if reversed in-game.
-    float dawnDuskSide = step(0.0, sunDir.x);
-    vec3 twilightZenith = mix(NL_SKY_DUSK_ZENITH_COLOR, NL_SKY_DAWN_ZENITH_COLOR, dawnDuskSide);
-    vec3 twilightHorizon = mix(NL_SKY_DUSK_HORIZON_COLOR, NL_SKY_DAWN_HORIZON_COLOR, dawnDuskSide);
-    vec3 twilightEdge = mix(NL_SKY_DUSK_EDGE_COLOR, NL_SKY_DAWN_EDGE_COLOR, dawnDuskSide);
+    // Twilight: warm fog tint (reddish, low blue) signals dawn/dusk regardless of exact phase.
+    float warmth = fogColor.r - fogColor.b;
+    float twilightFactor = clamp(warmth * 2.5, 0.0, 1.0) * (1.0 - abs(dayFactor - 0.5) * 0.6);
+
+    vec3 twilightZenith = NL_SKY_DAWN_ZENITH_COLOR;
+    vec3 twilightHorizon = NL_SKY_DAWN_HORIZON_COLOR;
+    vec3 twilightEdge = NL_SKY_DAWN_EDGE_COLOR;
 
     vec3 baseZenith = mix(NL_SKY_NIGHT_ZENITH_COLOR, NL_SKY_DAY_ZENITH_COLOR, dayFactor);
     vec3 baseHorizon = mix(NL_SKY_NIGHT_HORIZON_COLOR, NL_SKY_DAY_HORIZON_COLOR, dayFactor);
@@ -30,16 +33,14 @@ void nl_skyPaletteColors(out vec3 zenithColor, out vec3 horizonColor, out vec3 e
 }
 
 void main() {
-    vec3 dir = normalize(v_worldPos);
-    float horizonFactor = 1.0 - clamp(dir.y, 0.0, 1.0);
+    vec3 viewDir = normalize(v_worldPos);
+    float horizonFactor = 1.0 - clamp(viewDir.y, 0.0, 1.0);
 
     float blend = smoothstep(0.0, 1.0, horizonFactor);
     blend = pow(blend, NL_SKY_HORIZON_SHARPNESS);
 
-    vec3 zenithColor;
-    vec3 horizonColor;
-    vec3 edgeColor;
-    nl_skyPaletteColors(zenithColor, horizonColor, edgeColor);
+    vec3 zenithColor, horizonColor, edgeColor;
+    nl_skyPaletteColors(FogColor.rgb, zenithColor, horizonColor, edgeColor);
 
     vec3 skyColor = mix(zenithColor, horizonColor, blend);
 
