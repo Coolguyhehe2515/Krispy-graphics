@@ -241,10 +241,11 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
 
     vec3 skyLighting = FogColor.rgb * skyLight * NL_SKY_BRIGHTNESS;
 
-    vec3 torchColor = vec3(1.0, 0.65, 0.35);
-    vec3 torchLighting = torchColor * blockLight * NL_TORCH_INTENSITY;
+    vec3 torchLighting = NL_TORCH_COLOR * blockLight * blockLight * NL_TORCH_INTENSITY;
 
     vec3 light = skyLighting + torchLighting + vec3_splat(NL_MIN_AMBIENT);
+    light = clamp(light, 0.0, 1.2);
+
     return light * stdOutput.Albedo;
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
