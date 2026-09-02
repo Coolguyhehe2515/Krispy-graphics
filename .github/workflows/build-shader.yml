@@ -33,13 +33,13 @@ jobs:
         run: |
           for dir in project/*/shaders; do
             if [ -d "$dir" ]; then
-              cp project/lumen_graphics/settings.h "$dir/settings.h"
-              cp project/lumen_graphics/bgfx_shader.sh "$dir/bgfx_shader.sh"
+              cp lumen_graphics/settings.h "$dir/settings.h"
+              cp lumen_graphics/bgfx_shader.sh "$dir/bgfx_shader.sh"
             fi
           done
 
       - name: Build materials with Lazurite
-        run: lazurite build ./project -p android --shaderc ./shaderc -e lumen_graphics -o ./build/materials
+        run: lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
 
       - name: Assemble resource pack
         run: |
@@ -49,13 +49,8 @@ jobs:
             cp -r assets/. pack/
           fi
 
-      - name: Zip pack as mcpack
-        run: |
-          cd pack
-          zip -r ../LumenGraphics.mcpack . -x ".*"
-
-      - name: Upload artifact
+      - name: Upload pack as artifact
         uses: actions/upload-artifact@v4
         with:
           name: LumenGraphics-${{ steps.vars.outputs.sha_short }}
-          path: LumenGraphics.mcpack
+          path: pack/
