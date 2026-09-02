@@ -39,12 +39,15 @@ jobs:
           done
 
       - name: Build materials with Lazurite
-        run: lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
+        run: lazurite build ./project -p android --shaderc ./shaderc -e lumen_graphics -o ./build/materials
 
       - name: Assemble resource pack
         run: |
           mkdir -p pack/renderer/materials
           cp ./build/materials/*.material.bin pack/renderer/materials/
+          if [ -d "assets" ]; then
+            cp -r assets/. pack/
+          fi
 
       - name: Zip pack as mcpack
         run: |
