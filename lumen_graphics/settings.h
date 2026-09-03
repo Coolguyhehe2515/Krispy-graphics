@@ -58,9 +58,9 @@
 #define NL_SKY_NIGHT_EDGE_COLOR     vec3(0.03, 0.04, 0.10)
 
 // Twilight (shared for dawn and dusk)
-#define NL_SKY_TWILIGHT_ZENITH_COLOR   vec3(0.35, 0.30, 0.55)
-#define NL_SKY_TWILIGHT_HORIZON_COLOR  vec3(1.00, 0.55, 0.35)
-#define NL_SKY_TWILIGHT_EDGE_COLOR     vec3(1.00, 0.70, 0.45)
+#define NL_SKY_TWILIGHT_ZENITH_COLOR   vec3(0.70, 0.50, 0.40)
+#define NL_SKY_TWILIGHT_HORIZON_COLOR  vec3(0.98, 0.75, 0.50)
+#define NL_SKY_TWILIGHT_EDGE_COLOR     vec3(0.80, 0.35, 0.25)
 
 #define NL_SKY_TWILIGHT_RANGE 0.35
 
