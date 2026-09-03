@@ -116,12 +116,14 @@ float RenderChunkVert(StandardVertexInput stdInput, inout VertexOutput vertOutpu
     vertOutput.texcoord0 = decodedUV;
 
     #ifdef ALPHA_TEST_PASS
-    float waveTime = ViewPositionAndTime.w;
-    float heightFrac = fract(stdInput.worldPos.y + 0.001);
-    float waveStrength = heightFrac * NL_WAVE_AMPLITUDE;
-    float wave = sin(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x * NL_WAVE_FREQ + stdInput.worldPos.z * NL_WAVE_FREQ);
-    stdInput.worldPos.x += wave * waveStrength;
-    stdInput.worldPos.z += cos(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x) * waveStrength * 0.5;
+    if (cameraDepth < NL_WAVE_MAX_DISTANCE) {
+        float waveTime = ViewPositionAndTime.w;
+        float heightFrac = fract(stdInput.worldPos.y + 0.001);
+        float waveStrength = heightFrac * NL_WAVE_AMPLITUDE;
+        float wave = sin(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x * NL_WAVE_FREQ + stdInput.worldPos.z * NL_WAVE_FREQ);
+        stdInput.worldPos.x += wave * waveStrength;
+        stdInput.worldPos.z += cos(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x) * waveStrength * 0.5;
+    }
     #endif
 
     vertOutput.position = jitterVertexPosition(stdInput.worldPos);
@@ -162,6 +164,7 @@ void StandardTemplate_InvokeVertexOverrideFunction(StandardVertexInput vertInput
 void StandardTemplate_InvokeLightingVertexFunction(VertexInput vertInput, inout VertexOutput vertOutput, vec3 worldPosition);
 
 void computeLighting_RenderChunk_Vertex(VertexInput vInput, inout VertexOutput vOutput, vec3 worldPosition) {
+    // Decode packed lightmap UV using Newb's proven fract-based approach
     // (avoids bitwise ops entirely, matches vanilla 1.26.x packing).
     vOutput.lightmapUV = fract(vInput.lightmapUV.y * vec2(256.0, 4096.0));
 }
