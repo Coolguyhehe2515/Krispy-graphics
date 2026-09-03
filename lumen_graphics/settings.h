@@ -27,7 +27,13 @@
 #define NL_TORCH_COLOR vec3(1.0, 0.65, 0.35) // Torch/block-light tint
 #define NL_TORCH_INTENSITY 0.5              // Torch light strength
 #define NL_MIN_AMBIENT 0.03                 // Flat brightness floor so full darkness isn't pure black
-#define NL_LIGHT_WARMTH vec3(0.988, 0.753, 0.467) // Overall warm/cool tint multiplier on final lighting
+#define NL_LIGHT_WARMTH vec3(1.18, 1.0, 0.78) //lighting color this is crucial if you want to make your own variant
+
+// ---------------------------------------------------
+// Color grading (RenderChunk fragment, final output)
+// ---------------------------------------------------
+#define NL_SATURATION 1.25   // 1.0 = no change, higher = more vivid colors
+#define NL_CONTRAST 1.15     // 1.0 = no change, higher = punchier light/dark separation
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
