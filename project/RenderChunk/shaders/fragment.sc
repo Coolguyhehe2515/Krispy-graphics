@@ -244,6 +244,7 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     vec3 torchLighting = NL_TORCH_COLOR * blockLight * blockLight * NL_TORCH_INTENSITY;
 
     vec3 light = skyLighting + torchLighting + vec3_splat(NL_MIN_AMBIENT);
+    light *= NL_LIGHT_WARMTH;
     light = clamp(light, 0.0, 1.2);
 
     return light * stdOutput.Albedo;
