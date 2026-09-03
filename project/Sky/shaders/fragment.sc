@@ -5,14 +5,20 @@ precision highp float;
 
 uniform vec4 FogColor;
 
+vec3 nl_tameFogTint(vec3 fogColor) {
+    float luma = dot(fogColor, vec3(0.299, 0.587, 0.114));
+    return mix(fogColor, vec3_splat(luma), NL_FOG_TINT_DESATURATE);
+}
+
 float nl_dayFactor(vec3 fogColor) {
     float brightness = dot(fogColor, vec3(0.33, 0.33, 0.33));
     return clamp((brightness - 0.05) * 3.0, 0.0, 1.0);
 }
 
 float nl_twilightFactor(vec3 fogColor, float dayFactor) {
-    float warmth = fogColor.r - fogColor.b;
-    return clamp(warmth * 2.5, 0.0, 1.0) * (1.0 - abs(dayFactor - 0.5) * 0.6);
+    vec3 tamed = nl_tameFogTint(fogColor);
+    float warmth = tamed.r - tamed.b;
+    return clamp(warmth * 1.5, 0.0, 1.0) * (1.0 - abs(dayFactor - 0.5) * 0.6);
 }
 
 float nl_rainFactor(vec3 fogColor) {
