@@ -16,9 +16,9 @@
 // Water / lava surface wave (RenderChunk vertex)
 // ---------------------------------------------------
 #define NL_WATER_WAVE_SPEED 1.2
-#define NL_WATER_WAVE_HEIGHT 0.05
+#define NL_WATER_WAVE_HEIGHT 0.08
 #define NL_LAVA_WAVE_SPEED 0.4
-#define NL_LAVA_WAVE_HEIGHT 0.03
+#define NL_LAVA_WAVE_HEIGHT 0.08
 
 // ---------------------------------------------------
 // Terrain lighting (RenderChunk fragment)
@@ -28,6 +28,8 @@
 #define NL_TORCH_INTENSITY 0.5              // Torch light strength
 #define NL_MIN_AMBIENT 0.03                 // Flat brightness floor so full darkness isn't pure black
 #define NL_LIGHT_WARMTH vec3(1.18, 1.0, 0.78) //lighting color this is crucial if you want to make your own variant
+#define NL_CREVICE_SHADE_THRESHOLD 0.35
+#define NL_CREVICE_SHADE_STRENGTH 0.8
 
 // ---------------------------------------------------
 // Color grading (RenderChunk fragment, final output)
@@ -38,12 +40,12 @@
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
 // ---------------------------------------------------
-#define NL_CLOUD_SCROLL_SPEED 0.02   // How fast the pattern drifts with worldPos
+#define NL_CLOUD_SCROLL_SPEED 0.2   // How fast the pattern drifts with worldPos
 #define NL_CLOUD_SCALE 25.0          // Overall pattern density
 #define NL_CLOUD_ITERATIONS 5        // Layer count — higher = thicker clouds, more cost
 #define NL_CLOUD_CLUSTER_SIZE 4.93   // Cluster grouping size
 #define NL_CLOUD_THRESHOLD 0.725     // Coverage threshold — higher = fewer clouds
-#define NL_CLOUD_CELL_SIZE 0.6       // Individual puff size
+#define NL_CLOUD_CELL_SIZE 1.2       // Individual puff size
 #define NL_CLOUD_RIM_OFFSET 0.2      // Rim/edge detection thickness
 #define NL_CLOUD_RIM_BRIGHTNESS 2.0  // Rim highlight brightness multiplier
 #define NL_CLOUD_RIM_STRENGTH 0.6    // How strongly rim highlight blends in
