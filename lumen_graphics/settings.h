@@ -29,7 +29,7 @@
 #define NL_MIN_LIGHTING_BOOST 0.06   // lighting boost
 #define NL_LIGHT_WARMTH vec3(1.18, 1.0, 0.78) //lighting color this is crucial if you want to make your own variant
 #define NL_CREVICE_SHADE_THRESHOLD 0.35
-#define NL_CREVICE_SHADE_STRENGTH 0.8
+#define NL_CREVICE_SHADE_STRENGTH 1.5
 
 // ---------------------------------------------------
 // Color grading (RenderChunk fragment, final output)
@@ -41,7 +41,7 @@
 // Cloud rendering (Clouds material, Transparent pass)
 // ---------------------------------------------------
 #define NL_CLOUD_SCROLL_SPEED 0.2   // How fast the pattern drifts with worldPos
-#define NL_CLOUD_SCALE 25.0          // Overall pattern density
+#define NL_CLOUD_SCALE 5.0          // Overall pattern density
 #define NL_CLOUD_ITERATIONS 5        // Layer count — higher = thicker clouds, more cost
 #define NL_CLOUD_CLUSTER_SIZE 4.93   // Cluster grouping size
 #define NL_CLOUD_THRESHOLD 0.725     // Coverage threshold — higher = fewer clouds
@@ -83,3 +83,9 @@
 // Rain darkening (Sky + RenderChunk)
 // ---------------------------------------------------
 #define NL_RAIN_DARKEN_STRENGTH 0.4   // How much dimmer things get at full rain intensity
+
+// ---------------------------------------------------
+// Sun/Moon glow (SunMoon material)
+// ---------------------------------------------------
+#define NL_SUNMOON_TINT_DESATURATE 0.6   // 0 = vanilla color, 1 = fully neutral/white
+#define NL_SUNMOON_GLOW_ALPHA_CAP 0.5    // Caps how strong the soft glow can blend, core disc unaffected
