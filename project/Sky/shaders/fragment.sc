@@ -6,16 +6,21 @@ precision highp float;
 uniform vec4 FogColor;
 
 float nl_dayFactor(vec3 fogColor) {
-    // Derives day/night purely from vanilla's fog color — always reliable,
-    // avoids dependence on uniforms that don't behave consistently on this material.
     float brightness = dot(fogColor, vec3(0.33, 0.33, 0.33));
     return clamp((brightness - 0.05) * 3.0, 0.0, 1.0);
+}
+
+float nl_rainFactor(vec3 fogColor) {
+    // Rain skies go gray/desaturated — low color variance signals rain.
+    float maxC = max(fogColor.r, max(fogColor.g, fogColor.b));
+    float minC = min(fogColor.r, min(fogColor.g, fogColor.b));
+    float saturation = maxC - minC;
+    return clamp(1.0 - saturation * 6.0, 0.0, 1.0);
 }
 
 void nl_skyPaletteColors(vec3 fogColor, out vec3 zenithColor, out vec3 horizonColor, out vec3 edgeColor) {
     float dayFactor = nl_dayFactor(fogColor);
 
-    // Twilight: warm fog tint (reddish, low blue) signals dawn/dusk regardless of exact phase.
     float warmth = fogColor.r - fogColor.b;
     float twilightFactor = clamp(warmth * 2.5, 0.0, 1.0) * (1.0 - abs(dayFactor - 0.5) * 0.6);
 
@@ -46,6 +51,9 @@ void main() {
 
     float edgeFade = smoothstep(NL_SKY_EDGE_START, NL_SKY_EDGE_END, horizonFactor);
     skyColor = mix(skyColor, edgeColor, edgeFade * NL_SKY_EDGE_STRENGTH);
+
+    float rain = nl_rainFactor(FogColor.rgb);
+    skyColor *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
 
     gl_FragColor = vec4(skyColor, 1.0);
 }
