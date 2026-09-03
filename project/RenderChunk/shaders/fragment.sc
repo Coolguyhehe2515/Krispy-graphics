@@ -69,6 +69,7 @@ vec4 textureSample(NoopSampler noopsampler, vec3 _coord, float _lod) {
 vec4 textureSample(NoopSampler noopsampler, vec4 _coord, float _lod) {
     return vec4(0, 0, 0, 0);
 }
+
 struct NoopImage2D {
     int noop;
 };
@@ -95,6 +96,7 @@ uniform vec4 RenderChunkFogAlpha;
 uniform vec4 SubPixelOffset;
 uniform vec4 ViewPositionAndTime;
 uniform vec4 TimeOfDay;
+
 vec4 ViewRect;
 mat4 Proj;
 mat4 View;
@@ -111,6 +113,7 @@ mat4 WorldViewProj;
 vec4 PrevWorldPosOffset;
 vec4 AlphaRef4;
 float AlphaRef;
+
 struct VertexInput {
     vec4 color0;
     vec2 lightmapUV;
@@ -147,6 +150,7 @@ struct FragmentOutput {
 SAMPLER2D_AUTOREG(s_LightMapTexture);
 SAMPLER2D_AUTOREG(s_MatTexture);
 SAMPLER2D_AUTOREG(s_SeasonsTexture);
+
 struct StandardSurfaceInput {
     vec2 UV;
     vec3 Color;
@@ -171,6 +175,7 @@ StandardSurfaceInput StandardTemplate_DefaultInput(FragmentInput fragInput) {
     result.texcoord0 = fragInput.texcoord0;
     return result;
 }
+
 struct StandardSurfaceOutput {
     vec3 Albedo;
     float Alpha;
@@ -196,23 +201,43 @@ StandardSurfaceOutput StandardTemplate_DefaultOutput() {
     result.ViewSpaceNormal = vec3(0, 1, 0);
     return result;
 }
+
 vec3 applyFogVanilla(vec3 diffuse, vec3 fogColor, float fogIntensity) {
     return mix(diffuse, fogColor, fogIntensity);
 }
+
 #if defined(SEASONS__ON)&&(defined(ALPHA_TEST_PASS)|| defined(OPAQUE_PASS))
 vec4 applySeasons(vec3 vertexColor, float vertexAlpha, vec4 diffuse) {
     vec2 uv = vertexColor.xy;
-    diffuse.rgb *= mix(vec3(1.0, 1.0, 1.0), textureSample(s_SeasonsTexture, uv).rgb * 2.0, vertexColor.b);
+    diffuse.rgb *= mix(
+        vec3(1.0, 1.0, 1.0),
+        textureSample(s_SeasonsTexture, uv).rgb * 2.0,
+        vertexColor.b
+    );
     diffuse.rgb *= vec3_splat(vertexAlpha);
     diffuse.a = 1.0;
     return diffuse;
 }
 #endif
-void RenderChunkApplyFog(FragmentInput fragInput, StandardSurfaceInput surfaceInput, StandardSurfaceOutput surfaceOutput, inout FragmentOutput fragOutput) {
-    fragOutput.Color0.rgb = applyFogVanilla(fragOutput.Color0.rgb, FogColor.rgb, surfaceInput.fog.a);
+
+void RenderChunkApplyFog(
+    FragmentInput fragInput,
+    StandardSurfaceInput surfaceInput,
+    StandardSurfaceOutput surfaceOutput,
+    inout FragmentOutput fragOutput
+) {
+    fragOutput.Color0.rgb = applyFogVanilla(
+        fragOutput.Color0.rgb,
+        FogColor.rgb,
+        surfaceInput.fog.a
+    );
 }
+
 #ifdef TRANSPARENT_PASS
-void RenderChunkSurfTransparent(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
+void RenderChunkSurfTransparent(
+    in StandardSurfaceInput surfaceInput,
+    inout StandardSurfaceOutput surfaceOutput
+) {
     vec4 diffuse = textureSample(s_MatTexture, surfaceInput.UV);
     diffuse.a *= surfaceInput.Alpha;
     diffuse.rgb *= surfaceInput.Color.rgb;
@@ -221,32 +246,44 @@ void RenderChunkSurfTransparent(in StandardSurfaceInput surfaceInput, inout Stan
     surfaceOutput.Roughness = GlobalRoughness.x;
 }
 #endif
+
 struct CompositingOutput {
     vec3 mLitColor;
 };
 
-vec4 standardComposite(StandardSurfaceOutput stdOutput, CompositingOutput compositingOutput) {
+vec4 standardComposite(
+    StandardSurfaceOutput stdOutput,
+    CompositingOutput compositingOutput
+) {
     return vec4(compositingOutput.mLitColor, stdOutput.Alpha);
 }
-void StandardTemplate_CustomSurfaceShaderEntryIdentity(vec2 uv, vec3 worldPosition, inout StandardSurfaceOutput surfaceOutput) {
+
+void StandardTemplate_CustomSurfaceShaderEntryIdentity(
+    vec2 uv,
+    vec3 worldPosition,
+    inout StandardSurfaceOutput surfaceOutput
+) {
 }
+
 struct DirectionalLight {
     vec3 ViewSpaceDirection;
     vec3 Intensity;
 };
 
 vec3 nl_colorGrade(vec3 color) {
-    // Saturation: push each channel away from luminance.
     float luma = dot(color, vec3(0.299, 0.587, 0.114));
     color = mix(vec3_splat(luma), color, NL_SATURATION);
-
-    // Contrast: push away from mid-gray.
     color = (color - 0.5) * NL_CONTRAST + 0.5;
 
     return clamp(color, 0.0, 1.0);
 }
 
-vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput stdInput, StandardSurfaceOutput stdOutput, DirectionalLight primaryLight) {
+vec3 computeLighting_RenderChunk(
+    FragmentInput fragInput,
+    StandardSurfaceInput stdInput,
+    StandardSurfaceOutput stdOutput,
+    DirectionalLight primaryLight
+) {
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
 
@@ -256,30 +293,41 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     vec3 light = skyLighting + torchLighting + vec3_splat(NL_MIN_AMBIENT);
     light *= NL_LIGHT_WARMTH;
 
-    // Rain darkening — reuse the same gray-sky detection as the Sky material.
     float maxC = max(FogColor.r, max(FogColor.g, FogColor.b));
     float minC = min(FogColor.r, min(FogColor.g, FogColor.b));
     float rain = clamp(1.0 - (maxC - minC) * 6.0, 0.0, 1.0);
     light *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
+
+    light *= stdInput.Color.g > NL_CREVICE_SHADE_THRESHOLD
+        ? 1.0
+        : NL_CREVICE_SHADE_STRENGTH;
 
     light = clamp(light, 0.0, 1.2);
 
     vec3 result = light * stdOutput.Albedo;
     return nl_colorGrade(result);
 }
+
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
-void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
+void RenderChunkSurfAlpha(
+    in StandardSurfaceInput surfaceInput,
+    inout StandardSurfaceOutput surfaceOutput
+) {
     vec4 diffuse = textureSample(s_MatTexture, surfaceInput.UV);
     const float ALPHA_THRESHOLD = 0.5;
+
     if (diffuse.a < ALPHA_THRESHOLD) {
         discard;
     }
+
     #if defined(ALPHA_TEST_PASS)&& defined(SEASONS__OFF)
     diffuse.rgb *= surfaceInput.Color.rgb;
     #endif
+
     #if defined(ALPHA_TEST_PASS)&& defined(SEASONS__ON)
     diffuse = applySeasons(surfaceInput.Color, surfaceInput.Alpha, diffuse);
     #endif
+
     #ifdef ALPHA_TEST_PASS
     surfaceOutput.Albedo = diffuse.rgb;
     surfaceOutput.Alpha = diffuse.a;
@@ -287,18 +335,25 @@ void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSu
     #endif
 }
 #endif
+
 #if defined(DEPTH_ONLY_OPAQUE_PASS)|| defined(OPAQUE_PASS)
-void RenderChunkSurfOpaque(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
+void RenderChunkSurfOpaque(
+    in StandardSurfaceInput surfaceInput,
+    inout StandardSurfaceOutput surfaceOutput
+) {
     #ifdef OPAQUE_PASS
     vec4 diffuse = textureSample(s_MatTexture, surfaceInput.UV);
     #endif
+
     #if defined(OPAQUE_PASS)&& defined(SEASONS__OFF)
     diffuse.rgb *= surfaceInput.Color.rgb;
     diffuse.a = surfaceInput.Alpha;
     #endif
+
     #if defined(OPAQUE_PASS)&& defined(SEASONS__ON)
     diffuse = applySeasons(surfaceInput.Color, surfaceInput.Alpha, diffuse);
     #endif
+
     #ifdef OPAQUE_PASS
     surfaceOutput.Albedo = diffuse.rgb;
     surfaceOutput.Alpha = diffuse.a;
@@ -306,40 +361,87 @@ void RenderChunkSurfOpaque(in StandardSurfaceInput surfaceInput, inout StandardS
     #endif
 }
 #endif
-void StandardTemplate_Opaque_Frag(FragmentInput fragInput, inout FragmentOutput fragOutput) {
-    StandardSurfaceInput surfaceInput = StandardTemplate_DefaultInput(fragInput);
-    StandardSurfaceOutput surfaceOutput = StandardTemplate_DefaultOutput();
+
+void StandardTemplate_Opaque_Frag(
+    FragmentInput fragInput,
+    inout FragmentOutput fragOutput
+) {
+    StandardSurfaceInput surfaceInput =
+        StandardTemplate_DefaultInput(fragInput);
+
+    StandardSurfaceOutput surfaceOutput =
+        StandardTemplate_DefaultOutput();
+
     surfaceInput.UV = fragInput.texcoord0;
     surfaceInput.Color = fragInput.color0.xyz;
     surfaceInput.Alpha = fragInput.color0.a;
+
     #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
     RenderChunkSurfAlpha(surfaceInput, surfaceOutput);
     #endif
+
     #if defined(DEPTH_ONLY_OPAQUE_PASS)|| defined(OPAQUE_PASS)
     RenderChunkSurfOpaque(surfaceInput, surfaceOutput);
     #endif
+
     #ifdef TRANSPARENT_PASS
     RenderChunkSurfTransparent(surfaceInput, surfaceOutput);
     #endif
-    StandardTemplate_CustomSurfaceShaderEntryIdentity(surfaceInput.UV, fragInput.worldPos, surfaceOutput);
+
+    StandardTemplate_CustomSurfaceShaderEntryIdentity(
+        surfaceInput.UV,
+        fragInput.worldPos,
+        surfaceOutput
+    );
+
     DirectionalLight primaryLight;
-    vec3 worldLightDirection = LightWorldSpaceDirection.xyz;
-    primaryLight.ViewSpaceDirection = ((View) * (vec4(worldLightDirection, 0))).xyz; // Attention!
-    primaryLight.Intensity = LightDiffuseColorAndIlluminance.rgb * LightDiffuseColorAndIlluminance.w;
+
+    vec3 worldLightDirection =
+        LightWorldSpaceDirection.xyz;
+
+    primaryLight.ViewSpaceDirection =
+        ((View) * (vec4(worldLightDirection, 0))).xyz;
+
+    primaryLight.Intensity =
+        LightDiffuseColorAndIlluminance.rgb *
+        LightDiffuseColorAndIlluminance.w;
+
     CompositingOutput compositingOutput;
-    compositingOutput.mLitColor = computeLighting_RenderChunk(fragInput, surfaceInput, surfaceOutput, primaryLight);
-    fragOutput.Color0 = standardComposite(surfaceOutput, compositingOutput);
-    RenderChunkApplyFog(fragInput, surfaceInput, surfaceOutput, fragOutput);
+
+    compositingOutput.mLitColor =
+        computeLighting_RenderChunk(
+            fragInput,
+            surfaceInput,
+            surfaceOutput,
+            primaryLight
+        );
+
+    fragOutput.Color0 =
+        standardComposite(
+            surfaceOutput,
+            compositingOutput
+        );
+
+    RenderChunkApplyFog(
+        fragInput,
+        surfaceInput,
+        surfaceOutput,
+        fragOutput
+    );
 }
+
 void main() {
     FragmentInput fragmentInput;
     FragmentOutput fragmentOutput;
+
     fragmentInput.color0 = v_color0;
     fragmentInput.fog = v_fog;
     fragmentInput.lightmapUV = v_lightmapUV;
     fragmentInput.texcoord0 = v_texcoord0;
     fragmentInput.worldPos = v_worldPos;
+
     fragmentOutput.Color0 = vec4(0, 0, 0, 0);
+
     ViewRect = u_viewRect;
     Proj = u_proj;
     View = u_view;
@@ -349,18 +451,25 @@ void main() {
     ViewProj = u_viewProj;
     InvViewProj = u_invViewProj;
     PrevViewProj = u_prevViewProj;
+
     {
         WorldArray[0] = u_model[0];
         WorldArray[1] = u_model[1];
         WorldArray[2] = u_model[2];
         WorldArray[3] = u_model[3];
     }
+
     World = u_model[0];
     WorldView = u_modelView;
     WorldViewProj = u_modelViewProj;
     PrevWorldPosOffset = u_prevWorldPosOffset;
     AlphaRef4 = u_alphaRef4;
     AlphaRef = u_alphaRef4.x;
-    StandardTemplate_Opaque_Frag(fragmentInput, fragmentOutput);
+
+    StandardTemplate_Opaque_Frag(
+        fragmentInput,
+        fragmentOutput
+    );
+
     gl_FragColor = fragmentOutput.Color0;
 }
