@@ -16,8 +16,7 @@ float nl_dayFactor(vec3 fogColor) {
 }
 
 float nl_twilightFactor(vec3 fogColor, float dayFactor) {
-    vec3 tamed = nl_tameFogTint(fogColor);
-    float warmth = tamed.r - tamed.b;
+    float warmth = fogColor.r - fogColor.b;
     return clamp(warmth * 1.5, 0.0, 1.0) * (1.0 - abs(dayFactor - 0.5) * 0.6);
 }
 
