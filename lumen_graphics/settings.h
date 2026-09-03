@@ -26,7 +26,7 @@
 #define NL_SKY_BRIGHTNESS 1.8               // How strongly FogColor drives outdoor brightness
 #define NL_TORCH_COLOR vec3(1.0, 0.65, 0.35) // Torch/block-light tint
 #define NL_TORCH_INTENSITY 0.5              // Torch light strength
-#define NL_MIN_AMBIENT 0.03                 // Flat brightness floor so full darkness isn't pure black
+#define NL_MIN_LIGHTING_BOOST 0.06   // lighting boost
 #define NL_LIGHT_WARMTH vec3(1.18, 1.0, 0.78) //lighting color this is crucial if you want to make your own variant
 #define NL_CREVICE_SHADE_THRESHOLD 0.35
 #define NL_CREVICE_SHADE_STRENGTH 0.8
