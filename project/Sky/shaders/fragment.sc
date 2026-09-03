@@ -24,9 +24,9 @@ void nl_skyPaletteColors(vec3 fogColor, out vec3 zenithColor, out vec3 horizonCo
     float warmth = fogColor.r - fogColor.b;
     float twilightFactor = clamp(warmth * 2.5, 0.0, 1.0) * (1.0 - abs(dayFactor - 0.5) * 0.6);
 
-    vec3 twilightZenith = NL_SKY_DAWN_ZENITH_COLOR;
-    vec3 twilightHorizon = NL_SKY_DAWN_HORIZON_COLOR;
-    vec3 twilightEdge = NL_SKY_DAWN_EDGE_COLOR;
+    vec3 twilightZenith = NL_SKY_TWILIGHT_ZENITH_COLOR;
+    vec3 twilightHorizon = NL_SKY_TWILIGHT_HORIZON_COLOR;
+    vec3 twilightEdge = NL_SKY_TWILIGHT_EDGE_COLOR;
 
     vec3 baseZenith = mix(NL_SKY_NIGHT_ZENITH_COLOR, NL_SKY_DAY_ZENITH_COLOR, dayFactor);
     vec3 baseHorizon = mix(NL_SKY_NIGHT_HORIZON_COLOR, NL_SKY_DAY_HORIZON_COLOR, dayFactor);
