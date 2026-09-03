@@ -49,15 +49,10 @@
 #define NL_SKY_NIGHT_HORIZON_COLOR  vec3(0.04, 0.05, 0.10)
 #define NL_SKY_NIGHT_EDGE_COLOR     vec3(0.06, 0.07, 0.12)
 
-// Dawn
-#define NL_SKY_DAWN_ZENITH_COLOR   vec3(0.35, 0.30, 0.55)
-#define NL_SKY_DAWN_HORIZON_COLOR  vec3(1.00, 0.55, 0.35)
-#define NL_SKY_DAWN_EDGE_COLOR     vec3(1.00, 0.70, 0.45)
-
-// Dusk
-#define NL_SKY_DUSK_ZENITH_COLOR   vec3(0.30, 0.20, 0.40)
-#define NL_SKY_DUSK_HORIZON_COLOR  vec3(0.85, 0.35, 0.45)
-#define NL_SKY_DUSK_EDGE_COLOR     vec3(0.90, 0.45, 0.50)
+// Twilight (shared for dawn and dusk — FogColor alone can't distinguish the two)
+#define NL_SKY_TWILIGHT_ZENITH_COLOR   vec3(0.35, 0.30, 0.55)
+#define NL_SKY_TWILIGHT_HORIZON_COLOR  vec3(1.00, 0.55, 0.35)
+#define NL_SKY_TWILIGHT_EDGE_COLOR     vec3(1.00, 0.70, 0.45)
 
 #define NL_SKY_TWILIGHT_RANGE 0.35
 
