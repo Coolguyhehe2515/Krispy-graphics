@@ -61,9 +61,19 @@ void main() {
     vec2 t = v_worldPos.xz * NL_CLOUD_SCROLL_SPEED;
     vec2 uv = v_worldPos.xz * 0.005;
 
+    // Cull fully faded-out fragments before running the expensive noise loop.
+    if (v_color0.a < 0.01) {
+        discard;
+    }
+
     vec3 cloud = nl_cloudPattern(uv, t);
 
     float cloudAlpha = clamp(cloud.r, 0.0, 1.0);
+
+    if (cloudAlpha < 0.01) {
+        discard;
+    }
+
     vec3 rimColor = v_color0.rgb * NL_CLOUD_RIM_BRIGHTNESS;
     vec3 cloudColor = mix(v_color0.rgb, rimColor, cloud.b * NL_CLOUD_RIM_STRENGTH);
 
