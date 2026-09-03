@@ -235,19 +235,37 @@ struct DirectionalLight {
     vec3 Intensity;
 };
 
+vec3 nl_colorGrade(vec3 color) {
+    // Saturation: push each channel away from luminance.
+    float luma = dot(color, vec3(0.299, 0.587, 0.114));
+    color = mix(vec3_splat(luma), color, NL_SATURATION);
+
+    // Contrast: push away from mid-gray.
+    color = (color - 0.5) * NL_CONTRAST + 0.5;
+
+    return clamp(color, 0.0, 1.0);
+}
+
 vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput stdInput, StandardSurfaceOutput stdOutput, DirectionalLight primaryLight) {
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
 
     vec3 skyLighting = FogColor.rgb * skyLight * NL_SKY_BRIGHTNESS;
-
     vec3 torchLighting = NL_TORCH_COLOR * blockLight * blockLight * NL_TORCH_INTENSITY;
 
     vec3 light = skyLighting + torchLighting + vec3_splat(NL_MIN_AMBIENT);
     light *= NL_LIGHT_WARMTH;
+
+    // Rain darkening — reuse the same gray-sky detection as the Sky material.
+    float maxC = max(FogColor.r, max(FogColor.g, FogColor.b));
+    float minC = min(FogColor.r, min(FogColor.g, FogColor.b));
+    float rain = clamp(1.0 - (maxC - minC) * 6.0, 0.0, 1.0);
+    light *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
+
     light = clamp(light, 0.0, 1.2);
 
-    return light * stdOutput.Albedo;
+    vec3 result = light * stdOutput.Albedo;
+    return nl_colorGrade(result);
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
 void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
