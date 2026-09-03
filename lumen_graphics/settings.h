@@ -13,6 +13,14 @@
 #define NL_WAVE_MAX_DISTANCE 24.0    // Beyond this distance (in blocks), skip wave animation entirely
 
 // ---------------------------------------------------
+// Water / lava surface wave (RenderChunk vertex)
+// ---------------------------------------------------
+#define NL_WATER_WAVE_SPEED 1.2
+#define NL_WATER_WAVE_HEIGHT 0.05
+#define NL_LAVA_WAVE_SPEED 0.4
+#define NL_LAVA_WAVE_HEIGHT 0.03
+
+// ---------------------------------------------------
 // Terrain lighting (RenderChunk fragment)
 // ---------------------------------------------------
 #define NL_SKY_BRIGHTNESS 1.8               // How strongly FogColor drives outdoor brightness
