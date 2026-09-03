@@ -77,6 +77,8 @@
 #define NL_SKY_EDGE_END 1.0           // Where it fully reaches horizon color
 #define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
 
+#define NL_FOG_TINT_DESATURATE 0.55   // 0 = use FogColor raw, 1 = fully grayscale (brightness only)
+
 // ---------------------------------------------------
 // Rain darkening (Sky + RenderChunk)
 // ---------------------------------------------------
