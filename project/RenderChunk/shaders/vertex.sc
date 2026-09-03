@@ -123,6 +123,23 @@ float RenderChunkVert(StandardVertexInput stdInput, inout VertexOutput vertOutpu
         float wave = sin(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x * NL_WAVE_FREQ + stdInput.worldPos.z * NL_WAVE_FREQ);
         stdInput.worldPos.x += wave * waveStrength;
         stdInput.worldPos.z += cos(waveTime * NL_WAVE_SPEED + stdInput.worldPos.x) * waveStrength * 0.5;
+
+    #ifdef TRANSPARENT_PASS
+    bool isWater = stdInput.vertInput.color0.b > 0.3 && stdInput.vertInput.color0.a < 0.95;
+    if (isWater) {
+        float waveTime = ViewPositionAndTime.w;
+        float waterWave = sin(waveTime * NL_WATER_WAVE_SPEED + stdInput.worldPos.x * 1.2 + stdInput.worldPos.z * 1.2);
+        stdInput.worldPos.y += waterWave * NL_WATER_WAVE_HEIGHT;
+    }
+    #endif
+
+    #ifdef OPAQUE_PASS
+    bool isLava = (stdInput.vertInput.color0.r + stdInput.vertInput.color0.g + stdInput.vertInput.color0.b) > 2.999
+                  && fract(stdInput.worldPos.y) > 0.889 && fract(stdInput.worldPos.y) < 0.891;
+    if (isLava) {
+        float waveTime = ViewPositionAndTime.w;
+        float lavaWave = sin(waveTime * NL_LAVA_WAVE_SPEED + stdInput.worldPos.x * 0.8 + stdInput.worldPos.z * 0.8);
+        stdInput.worldPos.y += lavaWave * NL_LAVA_WAVE_HEIGHT;
     }
     #endif
 
