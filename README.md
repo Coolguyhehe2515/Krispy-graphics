@@ -77,6 +77,7 @@ Drop any custom textures, sounds, or a `pack_icon.png` into the `assets/` folder
 - [**Newb Shader**](https://github.com/devendrn/newb-x-mcbe) by **devendrn** — primary inspiration 
 - [**Lazurite**](https://github.com/veka0/lazurite) by **veka0** — the shader build tool this project relies on
 - [**mcbe-shader-codebase**](https://github.com/veka0/mcbe-shader-codebase) by **veka0** — restored vanilla material reference
+- [**Vibrant visual like cloud**] (https://discord.com/users/1424917832222773339) by **minmin** 
 
 ## License
 
