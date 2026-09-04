@@ -24,12 +24,12 @@
 // Terrain lighting (RenderChunk fragment)
 // ---------------------------------------------------
 #define NL_SKY_BRIGHTNESS 1.8               // How strongly FogColor drives outdoor brightness
-#define NL_TORCH_COLOR vec3(1.0, 0.65, 0.35) // Torch/block-light tint
+#define NL_TORCH_COLOR vec3(1.0, 0.455, 0.20) // Torch/block-light tint
 #define NL_TORCH_INTENSITY 0.5              // Torch light strength
-#define NL_MIN_LIGHTING_BOOST 0.06   // lighting boost
-#define NL_LIGHT_WARMTH vec3(1.18, 1.0, 0.78) //lighting color this is crucial if you want to make your own variant
-#define NL_CREVICE_SHADE_THRESHOLD 0.35
-#define NL_CREVICE_SHADE_STRENGTH 1.5
+#define NL_MIN_LIGHTING_BOOST 0.02   // lighting boost
+#define NL_LIGHT_WARMTH vec3(0.988, 0.620, 0.447) //lighting color this is crucial if you want to make your own variant
+#define NL_CREVICE_SHADE_THRESHOLD 0.45
+#define NL_CREVICE_SHADE_STRENGTH 2.0
 
 // ---------------------------------------------------
 // Color grading (RenderChunk fragment, final output)
@@ -40,8 +40,8 @@
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
 // ---------------------------------------------------
-#define NL_CLOUD_SCROLL_SPEED 0.2   // How fast the pattern drifts with worldPos
-#define NL_CLOUD_SCALE 5.0          // Overall pattern density
+#define NL_CLOUD_SCROLL_SPEED 0.5   // How fast the pattern drifts with worldPos
+#define NL_CLOUD_SCALE 4.5          // Overall pattern density
 #define NL_CLOUD_ITERATIONS 5        // Layer count — higher = thicker clouds, more cost
 #define NL_CLOUD_CLUSTER_SIZE 4.93   // Cluster grouping size
 #define NL_CLOUD_THRESHOLD 0.725     // Coverage threshold — higher = fewer clouds
