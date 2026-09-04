@@ -27,7 +27,7 @@
 #define NL_TORCH_COLOR vec3(1.0, 0.455, 0.20) // Torch/block-light tint
 #define NL_TORCH_INTENSITY 0.5              // Torch light strength
 #define NL_MIN_LIGHTING_BOOST 0.02   // lighting boost
-#define NL_LIGHT_WARMTH vec3(0.988, 0.620, 0.447) //lighting color this is crucial if you want to make your own variant
+#define NL_LIGHT_WARMTH vec3(0.957, 0.969, 0.573) //lighting color this is crucial if you want to make your own variant
 #define NL_CREVICE_SHADE_THRESHOLD 0.45
 #define NL_CREVICE_SHADE_STRENGTH 2.0
 
@@ -35,7 +35,7 @@
 // Color grading (RenderChunk fragment, final output)
 // ---------------------------------------------------
 #define NL_SATURATION 1.25   // 1.0 = no change, higher = more vivid colors
-#define NL_CONTRAST 1.15     // 1.0 = no change, higher = punchier light/dark separation
+#define NL_CONTRAST 1.20     // 1.0 = no change, higher = punchier light/dark separation
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
@@ -43,9 +43,9 @@
 #define NL_CLOUD_SCROLL_SPEED 0.5   // How fast the pattern drifts with worldPos
 #define NL_CLOUD_SCALE 4.5          // Overall pattern density
 #define NL_CLOUD_ITERATIONS 5       // Layer count — higher = thicker clouds, more cost
-#define NL_CLOUD_CLUSTER_SIZE 4.93   // Cluster grouping size
-#define NL_CLOUD_THRESHOLD 0.725     // Coverage threshold — higher = fewer clouds
-#define NL_CLOUD_CELL_SIZE 1.2       // Individual puff size
+#define NL_CLOUD_CLUSTER_SIZE 6.0   // Cluster grouping size
+#define NL_CLOUD_THRESHOLD 0.500     // Coverage threshold — higher = fewer clouds
+#define NL_CLOUD_CELL_SIZE 3.0       // Individual puff size
 #define NL_CLOUD_RIM_OFFSET 0.2      // Rim/edge detection thickness
 #define NL_CLOUD_RIM_BRIGHTNESS 2.0  // Rim highlight brightness multiplier
 #define NL_CLOUD_RIM_STRENGTH 0.6    // How strongly rim highlight blends in
@@ -77,9 +77,15 @@
 #define NL_SKY_EDGE_END 1.0           // Where it fully reaches horizon color
 #define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
 
-#define NL_FOG_TINT_DESATURATE 0.55   // 0 = use FogColor raw, 1 = fully grayscale (brightness only)
+#define NL_NIGHT_BRIGHTNESS_BOOST 1.0   // Extra brightness added at full night, fades to 0 by day
 
-#define NL_NIGHT_BRIGHTNESS_BOOST 0.50   // Extra brightness added at full night, fades to 0 by day
+// ---------------------------------------------------
+// Terrain light tint (RenderChunk) — fixed palette, not raw FogColor
+// ---------------------------------------------------
+#define NL_LIGHT_DAY_COLOR       vec3(1.00, 1.00, 1.00)
+#define NL_LIGHT_NIGHT_COLOR     vec3(0.35, 0.45, 0.65)
+#define NL_LIGHT_TWILIGHT_COLOR  vec3(1.00, 0.75, 0.55)
+#define NL_LIGHT_TWILIGHT_STRENGTH 0.35   // Capped — twilight can only ever blend in this much, can't overpower
 
 // ---------------------------------------------------
 // Rain darkening (Sky + RenderChunk)
@@ -91,11 +97,11 @@
 // ---------------------------------------------------
 #define NL_SHOOTING_STAR_ENABLED 4
 #define NL_SHOOTING_STAR_SPEED 0.6         // How fast a star travels across its streak once spawned
-#define NL_SHOOTING_STAR_FREQUENCY 10.0     // How often a new "roll" happens — higher = more chances per second
+#define NL_SHOOTING_STAR_FREQUENCY 20.0     // How often a new "roll" happens — higher = more chances per second
 #define NL_SHOOTING_STAR_SPAWN_CHANCE 1.0 // Fraction of rolls that actually produce a star (0 = never, 1 = every roll)
 #define NL_SHOOTING_STAR_LENGTH 0.15       // Length of the visible streak/tail
 #define NL_SHOOTING_STAR_WIDTH 0.0025      // Thickness of the streak line
-#define NL_SHOOTING_STAR_BRIGHTNESS 2.5    // Peak brightness of the streak
+#define NL_SHOOTING_STAR_BRIGHTNESS 2.5   // Peak brightness of the streak
 
 // ---------------------------------------------------
 // Sun/Moon glow (SunMoon material)
