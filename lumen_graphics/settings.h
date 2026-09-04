@@ -16,18 +16,18 @@
 // Water / lava surface wave (RenderChunk vertex)
 // ---------------------------------------------------
 #define NL_WATER_WAVE_SPEED 1.2
-#define NL_WATER_WAVE_HEIGHT 0.08
-#define NL_LAVA_WAVE_SPEED 0.4
-#define NL_LAVA_WAVE_HEIGHT 0.08
+#define NL_WATER_WAVE_HEIGHT 0.10
+#define NL_LAVA_WAVE_SPEED 1.0
+#define NL_LAVA_WAVE_HEIGHT 0.10
 
 // ---------------------------------------------------
 // Terrain lighting (RenderChunk fragment)
 // ---------------------------------------------------
 #define NL_SKY_BRIGHTNESS 1.8               // How strongly FogColor drives outdoor brightness
-#define NL_TORCH_COLOR vec3(1.0, 0.455, 0.20) // Torch/block-light tint
-#define NL_TORCH_INTENSITY 0.5              // Torch light strength
+#define NL_TORCH_COLOR vec3(1.00, 0.60, 0.30) // Torch/block-light tint
+#define NL_TORCH_INTENSITY 0.7              // Torch light strength
 #define NL_MIN_LIGHTING_BOOST 0.02   // lighting boost
-#define NL_LIGHT_WARMTH vec3(0.957, 0.969, 0.573) //lighting color this is crucial if you want to make your own variant
+#define NL_LIGHT_WARMTH vec3(1.08, 1.0, 0.90) //lighting color this is crucial if you want to make your own variant
 #define NL_CREVICE_SHADE_THRESHOLD 0.45
 #define NL_CREVICE_SHADE_STRENGTH 2.0
 
@@ -56,7 +56,7 @@
 // ---------------------------------------------------
 
 // Day
-#define NL_SKY_DAY_ZENITH_COLOR   vec3(0.25, 0.50, 0.95)
+#define NL_SKY_DAY_ZENITH_COLOR   vec3(1.0, 0.0, 0.0)
 #define NL_SKY_DAY_HORIZON_COLOR  vec3(0.65, 0.80, 1.00)
 #define NL_SKY_DAY_EDGE_COLOR     vec3(0.80, 0.88, 1.00)
 
@@ -77,7 +77,7 @@
 #define NL_SKY_EDGE_END 1.0           // Where it fully reaches horizon color
 #define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
 
-#define NL_NIGHT_BRIGHTNESS_BOOST 1.0   // Extra brightness added at full night, fades to 0 by day
+#define NL_NIGHT_BRIGHTNESS_BOOST 0.7   // Extra brightness added at full night, fades to 0 by day
 
 // ---------------------------------------------------
 // Terrain light tint (RenderChunk) — fixed palette, not raw FogColor
