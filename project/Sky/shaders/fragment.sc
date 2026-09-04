@@ -5,17 +5,22 @@ precision highp float;
 
 uniform vec4 FogColor;
 uniform vec4 ViewPositionAndTime;
+uniform vec4 TimeOfDay;
 
-float nl_dayFactor(vec3 fogColor) {
-    float brightness = dot(fogColor, vec3(0.33, 0.33, 0.33));
-    return clamp((brightness - 0.05) * 3.0, 0.0, 1.0);
+float nl_sunHeight(float timeOfDay) {
+    float t = 2.0 * 3.14159265 * timeOfDay;
+    return cos(t); // matches Newb's sunDir.y = cos(t) exactly
 }
 
-float nl_twilightFactor(float dayFactor) {
-    float signedDay = dayFactor * 2.0 - 1.0;
-    float dawnFactor = clamp(1.0 - signedDay * signedDay, 0.0, 1.0);
-    dawnFactor *= dawnFactor * dawnFactor; // cube it — matches Newb's exact sharp falloff curve
+float nl_twilightFactor(float sunHeight) {
+    float dawnFactor = clamp(1.0 - sunHeight * sunHeight, 0.0, 1.0);
+    dawnFactor *= dawnFactor * dawnFactor;
     return dawnFactor;
+}
+
+float nl_dayFactorFromSun(float sunHeight) {
+    // Convert signed (-1..1) to our unsigned 0..1 convention.
+    return clamp(sunHeight * 0.5 + 0.5, 0.0, 1.0);
 }
 
 float nl_rainFactor(vec3 fogColor) {
@@ -23,18 +28,6 @@ float nl_rainFactor(vec3 fogColor) {
     float minC = min(fogColor.r, min(fogColor.g, fogColor.b));
     float saturation = maxC - minC;
     return clamp(1.0 - saturation * 6.0, 0.0, 1.0);
-}
-
-void nl_skyPaletteColors(float dayFactor, out vec3 zenithColor, out vec3 horizonColor, out vec3 edgeColor) {
-    float twilight = nl_twilightFactor(dayFactor);
-
-    vec3 baseZenith = mix(NL_SKY_NIGHT_ZENITH_COLOR, NL_SKY_DAY_ZENITH_COLOR, dayFactor);
-    vec3 baseHorizon = mix(NL_SKY_NIGHT_HORIZON_COLOR, NL_SKY_DAY_HORIZON_COLOR, dayFactor);
-    vec3 baseEdge = mix(NL_SKY_NIGHT_EDGE_COLOR, NL_SKY_DAY_EDGE_COLOR, dayFactor);
-
-    zenithColor = mix(baseZenith, NL_SKY_TWILIGHT_ZENITH_COLOR, twilight);
-    horizonColor = mix(baseHorizon, NL_SKY_TWILIGHT_HORIZON_COLOR, twilight);
-    edgeColor = mix(baseEdge, NL_SKY_TWILIGHT_EDGE_COLOR, twilight);
 }
 
 // Simple pseudo-random generator — turns any float into a "random-looking" 0-1 value.
@@ -104,9 +97,17 @@ void main() {
     float blend = smoothstep(0.0, 1.0, horizonFactor);
     blend = pow(blend, NL_SKY_HORIZON_SHARPNESS);
 
-    float dayFactor = nl_dayFactor(FogColor.rgb);
-    vec3 zenithColor, horizonColor, edgeColor;
-    nl_skyPaletteColors(dayFactor, zenithColor, horizonColor, edgeColor);
+    float sunHeight = nl_sunHeight(TimeOfDay.x);
+    float dayFactor = nl_dayFactorFromSun(sunHeight);
+    float twilight = nl_twilightFactor(sunHeight);
+
+    vec3 baseZenith = mix(NL_SKY_NIGHT_ZENITH_COLOR, NL_SKY_DAY_ZENITH_COLOR, dayFactor);
+    vec3 baseHorizon = mix(NL_SKY_NIGHT_HORIZON_COLOR, NL_SKY_DAY_HORIZON_COLOR, dayFactor);
+    vec3 baseEdge = mix(NL_SKY_NIGHT_EDGE_COLOR, NL_SKY_DAY_EDGE_COLOR, dayFactor);
+
+    vec3 zenithColor = mix(baseZenith, NL_SKY_TWILIGHT_ZENITH_COLOR, twilight);
+    vec3 horizonColor = mix(baseHorizon, NL_SKY_TWILIGHT_HORIZON_COLOR, twilight);
+    vec3 edgeColor = mix(baseEdge, NL_SKY_TWILIGHT_EDGE_COLOR, twilight);
 
     vec3 skyColor = mix(zenithColor, horizonColor, blend);
 
