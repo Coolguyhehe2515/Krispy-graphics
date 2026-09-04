@@ -12,7 +12,6 @@ float nl_dayFactor(vec3 fogColor) {
 }
 
 float nl_twilightFactor(float dayFactor) {
-    // Remap our 0..1 dayFactor to Newb's signed -1..1 convention (0 = exact sunrise/sunset).
     float signedDay = dayFactor * 2.0 - 1.0;
     float dawnFactor = clamp(1.0 - signedDay * signedDay, 0.0, 1.0);
     dawnFactor *= dawnFactor * dawnFactor; // cube it — matches Newb's exact sharp falloff curve
