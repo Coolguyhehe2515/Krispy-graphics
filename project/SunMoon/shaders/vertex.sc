@@ -8,10 +8,6 @@ $output v_color0, v_texcoord0, v_worldPos
 #include "bgfx_shader.sh"
 #include "settings.h"
 
-#ifdef INSTANCING__OFF
-uniform mat4 u_model[4];
-#endif
-
 void main() {
     #ifdef INSTANCING__OFF
     vec4 worldPos4 = mul(u_model[0], vec4(a_position, 1.0));
