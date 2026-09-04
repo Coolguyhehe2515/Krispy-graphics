@@ -108,3 +108,10 @@
 // ---------------------------------------------------
 #define NL_SUNMOON_TINT_DESATURATE 0.6   // 0 = vanilla color, 1 = fully neutral/white
 #define NL_SUNMOON_GLOW_ALPHA_CAP 0.5    // Caps how strong the soft glow can blend, core disc unaffected
+
+// ---------------------------------------------------
+// Ore glow (RenderChunk fragment, OPAQUE_PASS)
+// ---------------------------------------------------
+#define NL_ORE_GLOW_SATURATION 0.35   // Min color saturation to count as an "ore fleck"
+#define NL_ORE_GLOW_BRIGHTNESS 0.55   // Min brightness required alongside saturation
+#define NL_ORE_GLOW_STRENGTH 0.9      // How strong the glow boost is
