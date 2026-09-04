@@ -26,7 +26,7 @@
 #define NL_SKY_BRIGHTNESS 1.8               // How strongly FogColor drives outdoor brightness
 #define NL_TORCH_COLOR vec3(1.00, 0.60, 0.30) // Torch/block-light tint
 #define NL_TORCH_INTENSITY 0.7              // Torch light strength
-#define NL_MIN_LIGHTING_BOOST 0.02   // lighting boost
+#define NL_MIN_LIGHTING_BOOST 0.0   // lighting boost
 #define NL_LIGHT_WARMTH vec3(1.08, 1.0, 0.90) //lighting color this is crucial if you want to make your own variant
 #define NL_CREVICE_SHADE_THRESHOLD 0.45
 #define NL_CREVICE_SHADE_STRENGTH 2.0
@@ -56,9 +56,9 @@
 // ---------------------------------------------------
 
 // Day
-#define NL_SKY_DAY_ZENITH_COLOR   vec3(1.0, 0.0, 0.0)
-#define NL_SKY_DAY_HORIZON_COLOR  vec3(0.65, 0.80, 1.00)
-#define NL_SKY_DAY_EDGE_COLOR     vec3(0.80, 0.88, 1.00)
+#define NL_SKY_DAY_ZENITH_COLOR   vec3(0.20, 0.50, 0.90)
+#define NL_SKY_DAY_HORIZON_COLOR  vec3(0.60, 0.75, 0.95)
+#define NL_SKY_DAY_EDGE_COLOR     vec3(0.90, 0.95, 1.00)
 
 // Night
 #define NL_SKY_NIGHT_ZENITH_COLOR   vec3(0.02, 0.03, 0.08)
