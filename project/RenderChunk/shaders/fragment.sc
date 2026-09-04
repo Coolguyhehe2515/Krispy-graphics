@@ -251,6 +251,13 @@ vec3 nl_colorGrade(vec3 color) {
     return clamp(color, 0.0, 1.0);
 }
 
+// Adds extra brightness at night only — scales down to zero as it gets closer to day,
+// so daytime lighting is completely unaffected.
+vec3 nl_nightBoost(vec3 light, float skyLight) {
+    float nightAmount = 1.0 - clamp(skyLight * 1.3, 0.0, 1.0);
+    return light + vec3_splat(NL_NIGHT_BRIGHTNESS_BOOST * nightAmount);
+}
+
 vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput stdInput, StandardSurfaceOutput stdOutput, DirectionalLight primaryLight) {
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
@@ -275,6 +282,8 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
 
     // Crevice/corner darkening using vanilla's baked ambient occlusion (vertex color green channel).
     light *= stdInput.Color.g > NL_CREVICE_SHADE_THRESHOLD ? 1.0 : NL_CREVICE_SHADE_STRENGTH;
+
+    light = nl_nightBoost(light, skyLight);
 
     light = clamp(light, 0.0, 1.2);
 
