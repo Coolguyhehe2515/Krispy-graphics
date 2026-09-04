@@ -42,7 +42,7 @@
 // ---------------------------------------------------
 #define NL_CLOUD_SCROLL_SPEED 0.5   // How fast the pattern drifts with worldPos
 #define NL_CLOUD_SCALE 4.5          // Overall pattern density
-#define NL_CLOUD_ITERATIONS 5.0       // Layer count — higher = thicker clouds, more cost
+#define NL_CLOUD_ITERATIONS 5       // Layer count — higher = thicker clouds, more cost
 #define NL_CLOUD_CLUSTER_SIZE 4.93   // Cluster grouping size
 #define NL_CLOUD_THRESHOLD 0.725     // Coverage threshold — higher = fewer clouds
 #define NL_CLOUD_CELL_SIZE 1.2       // Individual puff size
@@ -89,7 +89,7 @@
 // ---------------------------------------------------
 // Shooting stars (Sky material, night only)
 // ---------------------------------------------------
-#define NL_SHOOTING_STAR_ENABLED 4.0
+#define NL_SHOOTING_STAR_ENABLED 4
 #define NL_SHOOTING_STAR_SPEED 0.6         // How fast a star travels across its streak once spawned
 #define NL_SHOOTING_STAR_FREQUENCY 10.0     // How often a new "roll" happens — higher = more chances per second
 #define NL_SHOOTING_STAR_SPAWN_CHANCE 1.0 // Fraction of rolls that actually produce a star (0 = never, 1 = every roll)
