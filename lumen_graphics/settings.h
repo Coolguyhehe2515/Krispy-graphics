@@ -79,6 +79,8 @@
 
 #define NL_FOG_TINT_DESATURATE 0.55   // 0 = use FogColor raw, 1 = fully grayscale (brightness only)
 
+#define NL_NIGHT_BRIGHTNESS_BOOST 0.50   // Extra brightness added at full night, fades to 0 by day
+
 // ---------------------------------------------------
 // Rain darkening (Sky + RenderChunk)
 // ---------------------------------------------------
