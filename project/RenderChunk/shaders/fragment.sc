@@ -235,9 +235,21 @@ struct DirectionalLight {
     vec3 Intensity;
 };
 
-vec3 nl_tameFogTint(vec3 fogColor) {
-    float luma = dot(fogColor, vec3(0.299, 0.587, 0.114));
-    return mix(fogColor, vec3_splat(luma), NL_FOG_TINT_DESATURATE);
+float nl_dayFactorFromFog(vec3 fogColor) {
+    float brightness = dot(fogColor, vec3(0.33, 0.33, 0.33));
+    return clamp((brightness - 0.05) * 3.0, 0.0, 1.0);
+}
+
+float nl_twilightFactorFromFog(vec3 fogColor, float dayFactor) {
+    float warmth = fogColor.r - fogColor.b;
+    return clamp(warmth * 1.5, 0.0, 1.0) * (1.0 - abs(dayFactor - 0.5) * 0.6);
+}
+
+vec3 nl_lightTint(vec3 fogColor) {
+    float dayFactor = nl_dayFactorFromFog(fogColor);
+    float twilight = nl_twilightFactorFromFog(fogColor, dayFactor);
+    vec3 base = mix(NL_LIGHT_NIGHT_COLOR, NL_LIGHT_DAY_COLOR, dayFactor);
+    return mix(base, NL_LIGHT_TWILIGHT_COLOR, twilight * NL_LIGHT_TWILIGHT_STRENGTH);
 }
 
 vec3 nl_colorGrade(vec3 color) {
@@ -262,7 +274,7 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
 
-    vec3 skyLighting = nl_tameFogTint(FogColor.rgb) * skyLight * NL_SKY_BRIGHTNESS;
+    vec3 skyLighting = nl_lightTint(FogColor.rgb) * skyLight * NL_SKY_BRIGHTNESS;
     vec3 torchLighting = NL_TORCH_COLOR * blockLight * blockLight * NL_TORCH_INTENSITY;
 
     vec3 light = skyLighting + torchLighting;
