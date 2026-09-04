@@ -6,11 +6,6 @@ precision highp float;
 uniform vec4 FogColor;
 uniform vec4 ViewPositionAndTime;
 
-vec3 nl_tameFogTint(vec3 fogColor) {
-    float luma = dot(fogColor, vec3(0.299, 0.587, 0.114));
-    return mix(fogColor, vec3_splat(luma), NL_FOG_TINT_DESATURATE);
-}
-
 float nl_dayFactor(vec3 fogColor) {
     float brightness = dot(fogColor, vec3(0.33, 0.33, 0.33));
     return clamp((brightness - 0.05) * 3.0, 0.0, 1.0);
