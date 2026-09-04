@@ -7,9 +7,7 @@ SAMPLER2D_AUTOREG(s_SunMoonTexture);
 uniform vec4 SunMoonColor;
 
 void main() {
-    vec4 texColor = textureSample(s_SunMoonTexture, v_texcoord0);
-
-    // Tame the tint so intense sunset SunMoonColor doesn't wash the whole glow red.
+    vec4 texColor = texture(s_SunMoonTexture, v_texcoord0);
     float luma = dot(SunMoonColor.rgb, vec3(0.299, 0.587, 0.114));
     vec3 tamedTint = mix(SunMoonColor.rgb, vec3_splat(luma), NL_SUNMOON_TINT_DESATURATE);
 
