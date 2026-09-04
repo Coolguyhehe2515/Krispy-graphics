@@ -85,6 +85,17 @@
 #define NL_RAIN_DARKEN_STRENGTH 0.4   // How much dimmer things get at full rain intensity
 
 // ---------------------------------------------------
+// Shooting stars (Sky material, night only)
+// ---------------------------------------------------
+#define NL_SHOOTING_STAR_ENABLED 4
+#define NL_SHOOTING_STAR_SPEED 0.6         // How fast a star travels across its streak once spawned
+#define NL_SHOOTING_STAR_FREQUENCY 10.0     // How often a new "roll" happens — higher = more chances per second
+#define NL_SHOOTING_STAR_SPAWN_CHANCE 1 // Fraction of rolls that actually produce a star (0 = never, 1 = every roll)
+#define NL_SHOOTING_STAR_LENGTH 0.15       // Length of the visible streak/tail
+#define NL_SHOOTING_STAR_WIDTH 0.0025      // Thickness of the streak line
+#define NL_SHOOTING_STAR_BRIGHTNESS 2.5    // Peak brightness of the streak
+
+// ---------------------------------------------------
 // Sun/Moon glow (SunMoon material)
 // ---------------------------------------------------
 #define NL_SUNMOON_TINT_DESATURATE 0.6   // 0 = vanilla color, 1 = fully neutral/white
