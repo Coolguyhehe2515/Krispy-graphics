@@ -77,7 +77,7 @@
 #define NL_SKY_EDGE_END 1.0           // Where it fully reaches horizon color
 #define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
 
-#define NL_NIGHT_BRIGHTNESS_BOOST 0.7   // Extra brightness added at full night, fades to 0 by day
+#define NL_NIGHT_BRIGHTNESS_BOOST 0.4   // Extra brightness added at full night, fades to 0 by day
 
 // ---------------------------------------------------
 // Aurora (Sky material, night only)
@@ -86,8 +86,8 @@
 #define NL_AURORA_SPEED 0.05          // How fast the bands drift/shimmer over time
 #define NL_AURORA_SCALE 3.0           // How many ray bands wrap around the sky
 #define NL_AURORA_RAY_SHARPNESS 3.0   // Higher = thinner, more defined rays vs a soft blob
-#define NL_AURORA_HEIGHT_MIN 0.15     // Lowest point in the sky (viewDir.y) where aurora starts
-#define NL_AURORA_BRIGHTNESS 0.8
+#define NL_AURORA_HEIGHT_MIN 0.05     // Lowest point in the sky (viewDir.y) where aurora starts
+#define NL_AURORA_BRIGHTNESS 1.5
 #define NL_AURORA_COLOR_TOP vec3(0.3, 1.0, 0.9)     // Cyan — matches the top of your reference
 #define NL_AURORA_COLOR_BOTTOM vec3(0.6, 0.3, 1.0)  // Purple — matches the base glow
 
@@ -102,7 +102,7 @@
 // ---------------------------------------------------
 // Rain darkening (Sky + RenderChunk)
 // ---------------------------------------------------
-#define NL_RAIN_DARKEN_STRENGTH 0.4   // How much dimmer things get at full rain intensity
+#define NL_RAIN_DARKEN_STRENGTH 1.0   // How much dimmer things get at full rain intensity
 
 // ---------------------------------------------------
 // Shooting stars (Sky material, night only)
