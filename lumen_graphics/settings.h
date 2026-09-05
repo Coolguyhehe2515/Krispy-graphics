@@ -41,11 +41,11 @@
 // Cloud rendering (Clouds material, Transparent pass)
 // ---------------------------------------------------
 #define NL_CLOUD_SCROLL_SPEED 0.5   // How fast the pattern drifts with worldPos
-#define NL_CLOUD_SCALE 4.5          // Overall pattern density
+#define NL_CLOUD_SCALE 15.0          // Overall pattern density
 #define NL_CLOUD_ITERATIONS 5       // Layer count — higher = thicker clouds, more cost
-#define NL_CLOUD_CLUSTER_SIZE 6.0   // Cluster grouping size
+#define NL_CLOUD_CLUSTER_SIZE 7.5   // Cluster grouping size
 #define NL_CLOUD_THRESHOLD 0.500     // Coverage threshold — higher = fewer clouds
-#define NL_CLOUD_CELL_SIZE 3.0       // Individual puff size
+#define NL_CLOUD_CELL_SIZE 0.9       // Individual puff size
 #define NL_CLOUD_RIM_OFFSET 0.2      // Rim/edge detection thickness
 #define NL_CLOUD_RIM_BRIGHTNESS 2.0  // Rim highlight brightness multiplier
 #define NL_CLOUD_RIM_STRENGTH 0.6    // How strongly rim highlight blends in
@@ -78,6 +78,18 @@
 #define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
 
 #define NL_NIGHT_BRIGHTNESS_BOOST 0.7   // Extra brightness added at full night, fades to 0 by day
+
+// ---------------------------------------------------
+// Aurora (Sky material, night only)
+// ---------------------------------------------------
+#define NL_AURORA_ENABLED 1
+#define NL_AURORA_SPEED 0.05          // How fast the bands drift/shimmer over time
+#define NL_AURORA_SCALE 3.0           // How many ray bands wrap around the sky
+#define NL_AURORA_RAY_SHARPNESS 3.0   // Higher = thinner, more defined rays vs a soft blob
+#define NL_AURORA_HEIGHT_MIN 0.15     // Lowest point in the sky (viewDir.y) where aurora starts
+#define NL_AURORA_BRIGHTNESS 0.8
+#define NL_AURORA_COLOR_TOP vec3(0.3, 1.0, 0.9)     // Cyan — matches the top of your reference
+#define NL_AURORA_COLOR_BOTTOM vec3(0.6, 0.3, 1.0)  // Purple — matches the base glow
 
 // ---------------------------------------------------
 // Terrain light tint (RenderChunk) — fixed palette, not raw FogColor
