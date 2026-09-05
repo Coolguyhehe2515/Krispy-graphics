@@ -1,16 +1,16 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Lumen Graphics",
+    "name": "Krispy Graphics",
     "description": "A vanilla+ shader by KrispyBRN. Cloud rendering technique credit to minmin.",
-    "uuid": "b1a2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+    "uuid": "03e93748-51c5-4876-8c81-4f4d7ccd049d",
     "version": [0, 1, 0],
     "min_engine_version": [1, 26, 40]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "f6e5d4c3-b2a1-4f6e-9d8c-7b6a5f4e3d2c",
+      "uuid": "16c0c952-b7b7-42ad-9462-932bfb50cdd5",
       "version": [0, 1, 0]
     }
   ]
