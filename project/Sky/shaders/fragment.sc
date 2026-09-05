@@ -60,9 +60,10 @@ vec3 nl_aurora(vec3 viewDir, float t) {
     // Sharpen into thin bright rays instead of a soft blob.
     float rays = pow(n, NL_AURORA_RAY_SHARPNESS);
 
-    // Fade in above the minimum height, fade out again near the zenith.
-    float heightFactor = smoothstep(NL_AURORA_HEIGHT_MIN, NL_AURORA_HEIGHT_MIN + 0.35, viewDir.y);
-    heightFactor *= 1.0 - smoothstep(0.85, 1.0, viewDir.y);
+    // Fade in gradually starting near the horizon, stay visible across most of the
+    // sky, and only fade out again in the last sliver near true zenith.
+    float heightFactor = smoothstep(NL_AURORA_HEIGHT_MIN, NL_AURORA_HEIGHT_MIN + 0.5, viewDir.y);
+    heightFactor *= 1.0 - smoothstep(0.97, 1.0, viewDir.y);
 
     vec3 color = mix(NL_AURORA_COLOR_BOTTOM, NL_AURORA_COLOR_TOP, clamp((viewDir.y - NL_AURORA_HEIGHT_MIN) * 2.0, 0.0, 1.0));
 
