@@ -1,17 +1,17 @@
-Krispy Graphics
+# Krispy Graphics
 
 A native RenderDragon shader for Minecraft Bedrock Edition, built from scratch (not a fork) for the current Android RenderDragon pipeline.
 
 Krispy Graphics is heavily inspired by "Newb Shader" (https://github.com/devendrn/newb-x-mcbe) by devendrn.
 
-What's in this shader
+# What's in this shader
 
 - Waving plants and foliage
 - Custom day/night lighting driven by sky/block light and fog color
 - Procedural noise-based clouds with parallax-style depth
 - Tunable settings — no need to touch shader code for common adjustments
 
-Installing
+# Installing
 
 Stock Minecraft can't load custom "material.bin" files, so you'll need a loader app first.
 
@@ -36,7 +36,7 @@ lazurite build ./project -p android --shaderc ./shaderc -o ./build/materials
 
 See ".github/workflows/build-shader.yml" for the exact build steps used in CI.
 
-Making your own variant
+# Making your own variant
 
 Want to tweak Krispy Graphics into your own thing? Here's the easiest path:
 
