@@ -2,7 +2,7 @@ name: Build Shader Pack
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, lite ]
   workflow_dispatch:
 
 jobs:
@@ -33,8 +33,8 @@ jobs:
         run: |
           for dir in project/*/shaders; do
             if [ -d "$dir" ]; then
-              cp lumen_graphics/settings.h "$dir/settings.h"
-              cp lumen_graphics/bgfx_shader.sh "$dir/bgfx_shader.sh"
+              cp krispy_graphics/settings.h "$dir/settings.h"
+              cp krispy_graphics/bgfx_shader.sh "$dir/bgfx_shader.sh"
             fi
           done
 
@@ -52,5 +52,5 @@ jobs:
       - name: Upload pack as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LumenGraphics-${{ steps.vars.outputs.sha_short }}
+          name: KrispyGraphics-${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}
           path: pack/
