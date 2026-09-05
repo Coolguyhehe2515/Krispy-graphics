@@ -1,5 +1,5 @@
 /*
- * Lumen Graphics - settings.h
+ * Krispy Graphics - settings.h
  * Central config for tunable values across the shader.
  * Synced into every material's shaders folder at build time.
  */
