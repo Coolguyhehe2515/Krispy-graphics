@@ -2,7 +2,7 @@
 
 A native RenderDragon shader for Minecraft Bedrock Edition, built from scratch (not a fork) for the current Android RenderDragon pipeline.
 
-Krispy Graphics is heavily inspired by "Newb Shader" (https://github.com/devendrn/newb-x-mcbe) by devendrn.
+Krispy Graphics is heavily inspired by [Newb Shader] (https://github.com/devendrn/newb-x-mcbe) by devendrn.
 
 # What's in this shader
 
@@ -15,7 +15,7 @@ Krispy Graphics is heavily inspired by "Newb Shader" (https://github.com/devendr
 
 Stock Minecraft can't load custom "material.bin" files, so you'll need a loader app first.
 
-1. Install MB Loader from the Play Store: "Download here" (https://play.google.com/store/apps/details?id=io.github.bambosan.mbloader&hl=en)
+1. Install MB Loader from the Play Store: [Download here] (https://play.google.com/store/apps/details?id=io.github.bambosan.mbloader&hl=en)
 2. Download the latest build from the "Actions" (../../actions)
 3. Import the pack into MB Loader's Minecraft install.
 4. Enable it under Global Resources or your world's resource pack list.
@@ -24,11 +24,11 @@ Building it yourself
 
 This repo builds automatically via GitHub Actions on every push to "main" — no local setup required. If you want to build manually:
 
-1. Install "Lazurite" (https://veka0.github.io/lazurite/):
+1. Install [Lazurite] (https://veka0.github.io/lazurite/):
    
    "pip install lazurite"
 
-2. Grab a "shaderc" binary (Linux example: "devendrn/newb-shader releases" (https://github.com/devendrn/newb-shader/releases))
+2. Grab a "shaderc" binary (Linux example: [devendrn/newb-shader releases] (https://github.com/devendrn/newb-shader/releases))
 
 3. Run:
 
@@ -81,9 +81,9 @@ Everything in there gets copied straight into the final pack during the build �
 
 Credits
 
-- "Newb Shader" (https://github.com/devendrn/newb-x-mcbe) by devendrn — primary inspiration
-- "Lazurite" (https://github.com/veka0/lazurite) by veka0 — the shader build tool this project relies on
-- "mcbe-shader-codebase" (https://github.com/veka0/mcbe-shader-codebase) by veka0 — restored vanilla material reference
+- [Newb Shader] (https://github.com/devendrn/newb-x-mcbe) by devendrn — primary inspiration
+- [Lazurite] (https://github.com/veka0/lazurite) by veka0 — the shader build tool this project relies on
+- [mcbe-shader-codebase] (https://github.com/veka0/mcbe-shader-codebase) by veka0 — restored vanilla material reference
 - Vibrant visual like cloud by minmin
 
 License
