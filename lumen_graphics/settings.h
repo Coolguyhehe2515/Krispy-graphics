@@ -107,7 +107,7 @@
 // ---------------------------------------------------
 // Shooting stars (Sky material, night only)
 // ---------------------------------------------------
-#define NL_SHOOTING_STAR_ENABLED 4
+#define NL_SHOOTING_STAR_ENABLED 1
 #define NL_SHOOTING_STAR_SPEED 0.6         // How fast a star travels across its streak once spawned
 #define NL_SHOOTING_STAR_FREQUENCY 20.0     // How often a new "roll" happens — higher = more chances per second
 #define NL_SHOOTING_STAR_SPAWN_CHANCE 1.0 // Fraction of rolls that actually produce a star (0 = never, 1 = every roll)
