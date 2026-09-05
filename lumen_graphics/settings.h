@@ -127,3 +127,5 @@
 #define NL_ORE_GLOW_SATURATION 0.35   // Min color saturation to count as an "ore fleck"
 #define NL_ORE_GLOW_BRIGHTNESS 0.55   // Min brightness required alongside saturation
 #define NL_ORE_GLOW_STRENGTH 0.9      // How strong the glow boost is
+#define NL_GLOW_ALPHA_FLAG 0.99215686  // 253/255 — the exact alpha value used to flag "this pixel glows"
+#define NL_GLOW_ALPHA_TOLERANCE 0.004  // Small tolerance for float precision when comparing
