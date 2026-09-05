@@ -299,7 +299,11 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     light *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
 
     // Crevice/corner darkening using vanilla's baked ambient occlusion (vertex color green channel).
+    // Gated to OPAQUE_PASS only — leaves (ALPHA_TEST_PASS) use this same channel for biome
+    // foliage tint, not AO, so applying this there caused a blotchy green pattern on leaves.
+    #ifdef OPAQUE_PASS
     light *= stdInput.Color.g > NL_CREVICE_SHADE_THRESHOLD ? 1.0 : NL_CREVICE_SHADE_STRENGTH;
+    #endif
 
     light = nl_nightBoost(light, skyLight);
 
