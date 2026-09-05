@@ -9,18 +9,17 @@ uniform vec4 TimeOfDay;
 
 float nl_sunHeight(float timeOfDay) {
     float t = 2.0 * 3.14159265 * timeOfDay;
-    return cos(t); // matches Newb's sunDir.y = cos(t) exactly
-}
-
-float nl_twilightFactor(float sunHeight) {
-    float dawnFactor = clamp(1.0 - sunHeight * sunHeight, 0.0, 1.0);
-    dawnFactor *= dawnFactor * dawnFactor;
-    return dawnFactor;
+    return cos(t);
 }
 
 float nl_dayFactorFromSun(float sunHeight) {
-    // Convert signed (-1..1) to our unsigned 0..1 convention.
     return clamp(sunHeight * 0.5 + 0.5, 0.0, 1.0);
+}
+
+float nl_twilightFactorFromSun(float sunHeight) {
+    float dawnFactor = clamp(1.0 - sunHeight * sunHeight, 0.0, 1.0);
+    dawnFactor *= dawnFactor * dawnFactor;
+    return dawnFactor;
 }
 
 float nl_rainFactor(vec3 fogColor) {
@@ -34,6 +33,40 @@ float nl_rainFactor(vec3 fogColor) {
 // Used everywhere below to fake randomness without a real noise texture.
 float nl_hash(float n) {
     return fract(sin(n) * 43758.5453123);
+}
+
+float nl_noise1D(float x) {
+    float i = floor(x);
+    float f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(nl_hash(i), nl_hash(i + 1.0), f);
+}
+
+vec3 nl_aurora(vec3 viewDir, float t) {
+    if (viewDir.y < NL_AURORA_HEIGHT_MIN) {
+        return vec3(0.0);
+    }
+
+    // Angle around the horizon — used as the noise coordinate so bands wrap
+    // fully around the sky like real vertical aurora curtains.
+    float angle = atan(viewDir.x, viewDir.z);
+
+    // Two overlapping noise layers, animated at slightly different speeds,
+    // creates the wavy/shifting look instead of a static pattern.
+    float n = nl_noise1D(angle * NL_AURORA_SCALE + t * NL_AURORA_SPEED);
+    n += 0.5 * nl_noise1D(angle * NL_AURORA_SCALE * 2.3 - t * NL_AURORA_SPEED * 1.7);
+    n /= 1.5;
+
+    // Sharpen into thin bright rays instead of a soft blob.
+    float rays = pow(n, NL_AURORA_RAY_SHARPNESS);
+
+    // Fade in above the minimum height, fade out again near the zenith.
+    float heightFactor = smoothstep(NL_AURORA_HEIGHT_MIN, NL_AURORA_HEIGHT_MIN + 0.35, viewDir.y);
+    heightFactor *= 1.0 - smoothstep(0.85, 1.0, viewDir.y);
+
+    vec3 color = mix(NL_AURORA_COLOR_BOTTOM, NL_AURORA_COLOR_TOP, clamp((viewDir.y - NL_AURORA_HEIGHT_MIN) * 2.0, 0.0, 1.0));
+
+    return color * rays * heightFactor * NL_AURORA_BRIGHTNESS;
 }
 
 // Decides IF a shooting star exists during this time window ("cycle"), and returns
@@ -99,7 +132,7 @@ void main() {
 
     float sunHeight = nl_sunHeight(TimeOfDay.x);
     float dayFactor = nl_dayFactorFromSun(sunHeight);
-    float twilight = nl_twilightFactor(sunHeight);
+    float twilight = nl_twilightFactorFromSun(sunHeight);
 
     vec3 baseZenith = mix(NL_SKY_NIGHT_ZENITH_COLOR, NL_SKY_DAY_ZENITH_COLOR, dayFactor);
     vec3 baseHorizon = mix(NL_SKY_NIGHT_HORIZON_COLOR, NL_SKY_DAY_HORIZON_COLOR, dayFactor);
@@ -116,6 +149,12 @@ void main() {
 
     float rain = nl_rainFactor(FogColor.rgb);
     skyColor *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
+
+    #if NL_AURORA_ENABLED
+    if (dayFactor < 0.1 && rain < 0.3) {
+        skyColor += nl_aurora(viewDir, ViewPositionAndTime.w);
+    }
+    #endif
 
     #if NL_SHOOTING_STAR_ENABLED
     if (dayFactor < 0.15 && rain < 0.3) {
