@@ -276,6 +276,14 @@ vec3 nl_nightBoost(vec3 light, float skyLight) {
     return light + vec3_splat(NL_NIGHT_BRIGHTNESS_BOOST * nightAmount);
 }
 
+// Extended Reinhard tonemap — compresses bright values smoothly toward white
+// instead of hard-clipping at 1.0. NL_TONEMAP_WHITE_POINT controls how much
+// headroom exists before values start clipping to pure white.
+vec3 nl_extendedReinhard(vec3 color) {
+    vec3 numerator = color * (1.0 + (color / vec3_splat(NL_TONEMAP_WHITE_POINT * NL_TONEMAP_WHITE_POINT)));
+    return numerator / (1.0 + color);
+}
+
 vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput stdInput, StandardSurfaceOutput stdOutput, DirectionalLight primaryLight) {
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
@@ -301,7 +309,6 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     #endif
 
     ambient = nl_nightBoost(ambient, skyLight);
-    ambient = clamp(ambient, 0.0, 1.2);
 
     vec3 result = ambient * stdOutput.Albedo;
     result = nl_colorGrade(result);
@@ -317,7 +324,9 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     // in the texture, see RenderChunkSurfOpaque for detection.
     result += stdOutput.Albedo * stdOutput.Emissive * NL_ORE_GLOW_STRENGTH;
 
-    return clamp(result, 0.0, 1.0);
+    // Tonemap replaces the old hard clamp — smoothly compresses bright spots
+    // (torch next to glowing ore, etc.) instead of clipping harshly.
+    return nl_extendedReinhard(result);
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
 void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
