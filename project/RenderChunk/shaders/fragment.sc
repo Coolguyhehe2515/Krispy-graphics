@@ -280,42 +280,44 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
 
-    vec3 skyLighting = nl_lightTint(TimeOfDay.x) * skyLight * NL_SKY_BRIGHTNESS;
-    vec3 torchLighting = NL_TORCH_COLOR * blockLight * blockLight * NL_TORCH_INTENSITY;
+    // --- Ambient (sky-driven) lighting only, everything below is subject to color grading ---
+    vec3 ambient = nl_lightTint(TimeOfDay.x) * skyLight * NL_SKY_BRIGHTNESS;
 
-    vec3 light = skyLighting + torchLighting;
-
-    // Self-scaling ambient floor (matches Newb's approach) — shrinks as the scene gets brighter,
-    // instead of a flat additive floor that props up indoor/shaded areas too much.
-    float lum = dot(light, vec3(0.299, 0.587, 0.114));
-    light += vec3_splat(NL_MIN_LIGHTING_BOOST / (1.0 + lum));
-
-    light *= NL_LIGHT_WARMTH;
+    float lum = dot(ambient, vec3(0.299, 0.587, 0.114));
+    ambient += vec3_splat(NL_MIN_LIGHTING_BOOST / (1.0 + lum));
+    ambient *= NL_LIGHT_WARMTH;
 
     // Rain darkening — reuse the same gray-sky detection as the Sky material.
     float maxC = max(FogColor.r, max(FogColor.g, FogColor.b));
     float minC = min(FogColor.r, min(FogColor.g, FogColor.b));
     float rain = clamp(1.0 - (maxC - minC) * 6.0, 0.0, 1.0);
-    light *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
+    ambient *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
 
     // Crevice/corner darkening using vanilla's baked ambient occlusion (vertex color green channel).
     // Gated to OPAQUE_PASS only — leaves (ALPHA_TEST_PASS) use this same channel for biome
     // foliage tint, not AO, so applying this there caused a blotchy green pattern on leaves.
     #ifdef OPAQUE_PASS
-    light *= stdInput.Color.g > NL_CREVICE_SHADE_THRESHOLD ? 1.0 : NL_CREVICE_SHADE_STRENGTH;
+    ambient *= stdInput.Color.g > NL_CREVICE_SHADE_THRESHOLD ? 1.0 : NL_CREVICE_SHADE_STRENGTH;
     #endif
 
-    light = nl_nightBoost(light, skyLight);
+    ambient = nl_nightBoost(ambient, skyLight);
+    ambient = clamp(ambient, 0.0, 1.2);
 
-    light = clamp(light, 0.0, 1.2);
+    vec3 result = ambient * stdOutput.Albedo;
+    result = nl_colorGrade(result);
 
-    vec3 result = light * stdOutput.Albedo;
+    // --- Torch light applied AFTER color grading ---
+    // Keeps torches consistently bright regardless of ambient brightness — applying
+    // contrast to torch light made it look dim at night (low ambient pushes it below
+    // the contrast midpoint) and bright during the day (high ambient pushes it above).
+    vec3 torchLighting = NL_TORCH_COLOR * blockLight * blockLight * NL_TORCH_INTENSITY;
+    result += torchLighting * stdOutput.Albedo;
 
-    // Ore glow: pixels flagged via alpha ~253/255 in the texture get an emissive
-    // boost regardless of local lighting — see RenderChunkSurfOpaque for detection.
+    // Ore glow also stays post-grade for the same reason — flagged via alpha ~253/255
+    // in the texture, see RenderChunkSurfOpaque for detection.
     result += stdOutput.Albedo * stdOutput.Emissive * NL_ORE_GLOW_STRENGTH;
 
-    return nl_colorGrade(result);
+    return clamp(result, 0.0, 1.0);
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
 void RenderChunkSurfAlpha(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
