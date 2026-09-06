@@ -9,7 +9,6 @@ uniform vec4 SkyColor;
 void main() {
     vec3 dir = normalize(v_worldPos);
 
-    // Convert view direction into spherical (equirectangular) UV coordinates.
     float longitude = atan(dir.x, dir.z);
     float latitude = asin(clamp(dir.y, -1.0, 1.0));
 
@@ -19,5 +18,6 @@ void main() {
 
     vec4 texColor = texture(s_SkyTexture, equirectUV);
     vec4 result = SkyColor * texColor;
+    result.rgb *= NL_ENDSKY_TINT * NL_ENDSKY_BRIGHTNESS;
     gl_FragColor = vec4(result.rgb, result.a);
 }
