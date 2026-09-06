@@ -32,6 +32,12 @@
 #define NL_CREVICE_SHADE_STRENGTH 2.0
 
 // ---------------------------------------------------
+// End sky (EndSky material)
+// ---------------------------------------------------
+#define NL_ENDSKY_BRIGHTNESS 1.6
+#define NL_ENDSKY_TINT vec3(1.0, 1.0, 1.0)
+
+// ---------------------------------------------------
 // Color grading (RenderChunk fragment, final output)
 // ---------------------------------------------------
 #define NL_SATURATION 1.25   // 1.0 = no change, higher = more vivid colors
