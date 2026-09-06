@@ -42,6 +42,7 @@
 // ---------------------------------------------------
 #define NL_SATURATION 1.25   // 1.0 = no change, higher = more vivid colors
 #define NL_CONTRAST 1.20     // 1.0 = no change, higher = punchier light/dark separation
+#define NL_TONEMAP_WHITE_POINT 2.0   // Brightness level that maps to pure white; higher = more headroom before clipping
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
