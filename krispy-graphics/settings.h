@@ -23,7 +23,7 @@
 // ---------------------------------------------------
 // Terrain lighting (RenderChunk fragment)
 // ---------------------------------------------------
-#define NL_SKY_BRIGHTNESS 1.8               // How strongly FogColor drives outdoor brightness
+#define NL_SKY_BRIGHTNESS 1.5               // How strongly FogColor drives outdoor brightness
 #define NL_TORCH_COLOR vec3(1.00, 0.60, 0.30) // Torch/block-light tint
 #define NL_TORCH_INTENSITY 0.7              // Torch light strength
 #define NL_MIN_LIGHTING_BOOST 0.0   // lighting boost
@@ -42,7 +42,7 @@
 // ---------------------------------------------------
 #define NL_SATURATION 1.25   // 1.0 = no change, higher = more vivid colors
 #define NL_CONTRAST 1.20     // 1.0 = no change, higher = punchier light/dark separation
-#define NL_TONEMAP_WHITE_POINT 2.0   // Brightness level that maps to pure white; higher = more headroom before clipping
+#define NL_TONEMAP_WHITE_POINT 1.6   // Brightness level that maps to pure white; higher = more headroom before clipping
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
@@ -84,7 +84,7 @@
 #define NL_SKY_EDGE_END 1.0           // Where it fully reaches horizon color
 #define NL_SKY_EDGE_STRENGTH 0.3      // How strong the extra horizon fade is
 
-#define NL_NIGHT_BRIGHTNESS_BOOST 0.4   // Extra brightness added at full night, fades to 0 by day
+#define NL_NIGHT_BRIGHTNESS_BOOST 0.45   // Extra brightness added at full night, fades to 0 by day
 
 // ---------------------------------------------------
 // Aurora (Sky material, night only)
