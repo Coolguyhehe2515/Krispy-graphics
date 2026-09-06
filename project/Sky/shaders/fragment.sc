@@ -9,38 +9,39 @@ uniform vec4 TimeOfDay;
 
 SAMPLER2D_AUTOREG(s_NoiseVoxel);
 
-float nl_pow2(float x) { return x * x; }
-float nl_clamp01(float x) { return clamp(x, 0.0, 1.0); }
-float nl_sqrt1(float x) { return sqrt(max(x, 0.0)); }
+float pow2(float x) { return x * x; }
+float clamp01(float x) { return clamp(x, 0.0, 1.0); }
+float sqrt1(float x) { return sqrt(max(x, 0.0)); }
 
 vec3 nl_getAurora(vec3 vDir, float time, float dither) {
     float VdotU = clamp(vDir.y, 0.0, 1.0);
-    float visibility = nl_sqrt1(nl_clamp01(VdotU * 4.5 - 0.225));
-    visibility *= 4.0 - VdotU * 0.9;
+    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.225));
+    visibility *= 2.0 - VdotU * 0.9;
+
     if (visibility <= 1.0) return vec3(0.0);
 
     vec3 aurora = vec3(0.0);
     vec3 wpos = vDir;
     wpos.xz /= max(wpos.y, 0.1);
     vec2 cameraPosM = vec2(0.0);
-    cameraPosM.x += time * 10.0;
+    cameraPosM.x += time * 2.0;
 
-    const int sampleCount = 7;
+    const int sampleCount = 10;
     const int sampleCountP = sampleCount + 10;
 
-    float ditherM = dither + 10.0;
-    float auroraAnimate = time * 0.0;
+    float ditherM = dither + 9.0;
+    float auroraAnimate = time * 0.01;
 
     for (int i = 0; i < sampleCount; i++) {
-        float current = nl_pow2((float(i) + ditherM) / float(sampleCountP));
+        float current = pow2((float(i) + ditherM) / float(sampleCountP));
         vec2 planePos = wpos.xz * (0.8 + current) * 10.0 + cameraPosM;
         planePos *= 0.0007;
         float noise = texture(s_NoiseVoxel, planePos).r;
-        noise = nl_pow2(nl_pow2(nl_pow2(nl_pow2(1.0 - 0.8 * abs(noise - 0.5)))));
+        noise = pow2(pow2(1.0 - 0.8 * abs(noise - 0.5)));
         noise *= texture(s_NoiseVoxel, planePos * 8.0 + auroraAnimate).b;
         noise *= texture(s_NoiseVoxel, planePos * 1.0 - auroraAnimate).g;
         float currentM = 1.0 - current;
-        aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), nl_pow2(nl_pow2(currentM)));
+        aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), pow2(pow2(currentM)));
     }
 
     aurora *= 3.8;
@@ -134,11 +135,10 @@ void main() {
     skyColor *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
 
     #if NL_AURORA_ENABLED
-    if (dayFactor < 0.1 && rain < 0.3) {
-        float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-        vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w, dither);
-        skyColor += aurora * NL_AURORA_BRIGHTNESS;
-    }
+    float dither = texture(s_NoiseVoxel, mod(gl_FragCoord.xy, 256.0) / 256.0).r;
+    float auroraMask = (1.0 - rain) * max(1.0 - 3.0 * max(FogColor.g, FogColor.b), 0.0);
+    vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w, dither) * auroraMask;
+    skyColor += aurora * NL_AURORA_BRIGHTNESS;
     #endif
 
     #if NL_SHOOTING_STAR_ENABLED
