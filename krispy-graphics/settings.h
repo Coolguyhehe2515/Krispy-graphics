@@ -28,8 +28,6 @@
 #define NL_TORCH_INTENSITY 0.7              // Torch light strength
 #define NL_MIN_LIGHTING_BOOST 0.0   // lighting boost
 #define NL_LIGHT_WARMTH vec3(1.08, 1.0, 0.90) //lighting color this is crucial if you want to make your own variant
-#define NL_CREVICE_SHADE_THRESHOLD 0.45
-#define NL_CREVICE_SHADE_STRENGTH 2.0
 
 // ---------------------------------------------------
 // End sky (EndSky material)
