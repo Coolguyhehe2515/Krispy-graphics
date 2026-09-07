@@ -134,9 +134,14 @@ void main() {
     float rain = nl_rainFactor(FogColor.rgb);
     skyColor *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
 
-    // DEBUG: unconditional aurora + flat magenta tint to guarantee a visible change
-    float dither = texture(s_NoiseVoxel, mod(gl_FragCoord.xy, 256.0) / 256.0).r;
-    skyColor += nl_getAurora(viewDir, ViewPositionAndTime.w, dither) + vec3(0.3, 0.0, 0.3);
+    #if NL_AURORA_ENABLED
+    if (dayFactor < 0.15 && rain < 0.3) {
+        float dither = texture(s_NoiseVoxel, mod(gl_FragCoord.xy, 256.0) / 256.0).r;
+        float auroraMask = (1.0 - rain) * max(1.0 - 3.0 * max(FogColor.g, FogColor.b), 0.0);
+        vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w, dither) * auroraMask;
+        skyColor += aurora * NL_AURORA_BRIGHTNESS;
+    }
+    #endif
 
     #if NL_SHOOTING_STAR_ENABLED
     if (dayFactor < 0.15 && rain < 0.3) {
