@@ -1,0 +1,58 @@
+{
+  "format_version": "1.10.0",
+  "particle_effect": {
+    "description": {
+      "identifier": "krispygraphics:rain_splash",
+      "basic_render_parameters": {
+        "material": "particles_blend",
+        "texture": "textures/particle/krispy_splash"
+      }
+    },
+    "components": {
+      "minecraft:emitter_rate_manual": {
+        "max_particles": 300
+      },
+      "minecraft:emitter_lifetime_expression": {
+        "activation_expression": 1,
+        "expiration_expression": 0
+      },
+      "minecraft:emitter_shape_point": {},
+      "minecraft:particle_initial_speed": 0.0,
+      "minecraft:particle_lifetime_expression": {
+        "max_lifetime": "Math.Random(0.25, 0.35)"
+      },
+      "minecraft:particle_motion_dynamic": {
+        "linear_acceleration": [0.0, 0.0, 0.0],
+        "linear_drag_coefficient": 0.0
+      },
+      "minecraft:particle_appearance_billboard": {
+        "size": [0.2, 0.2],
+        "facing_camera_mode": "lookat_xyz",
+        "uv": {
+  "texture_width": 16,
+  "texture_height": 32,
+  "flipbook": {
+    "base_UV": [0, 0],
+    "size_UV": [16, 16],
+    "step_UV": [0, 16],
+    "frames_per_second": 0,
+    "max_frame": 2,
+    "stretch_to_lifetime": true,
+    "loop": false
+  }
+        }
+      },
+      "minecraft:particle_appearance_tinting": {
+        "color": {
+          "interpolant": "variable.particle_age / variable.particle_lifetime",
+          "gradient": {
+            "0.0": [1.0, 1.0, 1.0, 0.9],
+            "0.7": [1.0, 1.0, 1.0, 0.5],
+            "1.0": [1.0, 1.0, 1.0, 0.0]
+          }
+        }
+      },
+      "minecraft:particle_appearance_lighting": {}
+    }
+  }
+}
