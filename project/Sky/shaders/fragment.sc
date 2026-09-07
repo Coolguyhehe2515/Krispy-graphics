@@ -108,7 +108,6 @@ float nl_shootingStarStreak(vec3 viewDir, float t, float seed, float cycle) {
 }
 
 void main() {
-
     vec3 viewDir = normalize(v_worldPos);
     float horizonFactor = 1.0 - clamp(viewDir.y, 0.0, 1.0);
 
@@ -135,7 +134,9 @@ void main() {
     float rain = nl_rainFactor(FogColor.rgb);
     skyColor *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
 
-    skyColor += nl_aurora(viewDir, ViewPositionAndTime.w) + vec3(0.3, 0.0, 0.3); // DEBUG: unconditional, plus a flat magenta tint to guarantee visible change
+    // DEBUG: unconditional aurora + flat magenta tint to guarantee a visible change
+    float dither = texture(s_NoiseVoxel, mod(gl_FragCoord.xy, 256.0) / 256.0).r;
+    skyColor += nl_getAurora(viewDir, ViewPositionAndTime.w, dither) + vec3(0.3, 0.0, 0.3);
 
     #if NL_SHOOTING_STAR_ENABLED
     if (dayFactor < 0.15 && rain < 0.3) {
