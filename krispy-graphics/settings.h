@@ -107,7 +107,7 @@
 // ---------------------------------------------------
 // Rain darkening (Sky + RenderChunk)
 // ---------------------------------------------------
-#define NL_RAIN_DARKEN_STRENGTH 1.0   // How much dimmer things get at full rain intensity
+#define NL_RAIN_DARKEN_STRENGTH 0.4   // How much dimmer things get at full rain intensity
 
 // ---------------------------------------------------
 // Shooting stars (Sky material, night only)
