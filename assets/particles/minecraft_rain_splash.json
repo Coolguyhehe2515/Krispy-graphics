@@ -1,0 +1,46 @@
+{
+  "format_version": "1.21.60",
+  "particle_effect": {
+    "description": {
+      "identifier": "minecraft:rain_splash_particle",
+      "basic_render_parameters": {
+        "material": "particles_blend",
+        "texture": "textures/particle/krispy_splash"
+      }
+    },
+    "events": {
+      "spawn_krispy_splash": {
+        "particle_effect": {
+          "effect": "krispygraphics:rain_splash",
+          "type": "particle"
+        }
+      }
+    },
+    "components": {
+      "minecraft:emitter_rate_manual": {
+        "max_particles": 300
+      },
+      "minecraft:emitter_shape_point": {
+        "offset": [0.0, -0.18, 0.0]
+      },
+      "minecraft:emitter_lifetime_expression": {
+        "activation_expression": 1,
+        "expiration_expression": 0
+      },
+      "minecraft:particle_lifetime_expression": {
+        "max_lifetime": "0.05"
+      },
+      "minecraft:particle_lifetime_events": {
+        "creation_event": "spawn_krispy_splash"
+      },
+      "minecraft:particle_expire_if_not_in_blocks": ["minecraft:air"],
+      "minecraft:particle_appearance_billboard": {
+        "size": [0.0, 0.0],
+        "facing_camera_mode": "lookat_xyz"
+      },
+      "minecraft:particle_appearance_tinting": {
+        "color": [1.0, 1.0, 1.0, 0.0]
+      }
+    }
+  }
+}
