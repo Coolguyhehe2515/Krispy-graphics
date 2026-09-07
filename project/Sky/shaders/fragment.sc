@@ -111,6 +111,9 @@ void main() {
     gl_FragColor = vec4(texture(s_NoiseVoxel, vec2(0.5, 0.5)).rgb, 1.0);
     return; // DEBUG: bypass everything else, show raw noise sample
 
+void main() {
+    int deliberateSyntaxError = ; // TEMP: forces build failure to reveal full compiler defines
+
     vec3 viewDir = normalize(v_worldPos);
     float horizonFactor = 1.0 - clamp(viewDir.y, 0.0, 1.0);
 
