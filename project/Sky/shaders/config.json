@@ -1,9 +1,0 @@
-{
-  "file_overwrite": {
-    "default": {
-      "fragment": "shaders/fragment.sc",
-      "vertex": "shaders/vertex.sc",
-      "varying": "shaders/varying.def.sc"
-    }
-  }
-}
