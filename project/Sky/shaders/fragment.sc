@@ -17,7 +17,7 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
     float VdotU = clamp(vDir.y, 0.0, 1.0);
     float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.225));
     visibility *= 2.0 - VdotU * 0.9;
-aa
+
     if (visibility <= 1.0) return vec3(0.0);
 
     vec3 aurora = vec3(0.0);
@@ -139,7 +139,7 @@ void main() {
     float auroraMask = (1.0 - rain) * max(1.0 - 3.0 * max(FogColor.g, FogColor.b), 0.0);
     vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w, dither) * auroraMask;
     skyColor += aurora * NL_AURORA_BRIGHTNESS;
-#endif
+    #endif
 
     #if NL_SHOOTING_STAR_ENABLED
     if (dayFactor < 0.15 && rain < 0.3) {
