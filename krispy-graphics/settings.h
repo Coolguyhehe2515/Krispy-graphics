@@ -40,21 +40,21 @@
 // ---------------------------------------------------
 #define NL_SATURATION 1.25   // 1.0 = no change, higher = more vivid colors
 #define NL_CONTRAST 1.20     // 1.0 = no change, higher = punchier light/dark separation
-#define NL_TONEMAP_WHITE_POINT 1.6   // Brightness level that maps to pure white; higher = more headroom before clipping
+#define NL_TONEMAP_WHITE_POINT 1.6   // Brightness level that maps to pure white; higher = more headroom before clippin
 
 // ---------------------------------------------------
 // Cloud rendering (Clouds material, Transparent pass)
 // ---------------------------------------------------
-#define NL_CLOUD_SCROLL_SPEED 0.5   // How fast the pattern drifts with worldPos
-#define NL_CLOUD_SCALE 15.0          // Overall pattern density
-#define NL_CLOUD_ITERATIONS 5       // Layer count — higher = thicker clouds, more cost
-#define NL_CLOUD_CLUSTER_SIZE 7.5   // Cluster grouping size
-#define NL_CLOUD_THRESHOLD 0.500     // Coverage threshold — higher = fewer clouds
-#define NL_CLOUD_CELL_SIZE 0.9       // Individual puff size
-#define NL_CLOUD_RIM_OFFSET 0.2      // Rim/edge detection thickness
-#define NL_CLOUD_RIM_BRIGHTNESS 2.0  // Rim highlight brightness multiplier
-#define NL_CLOUD_RIM_STRENGTH 0.6    // How strongly rim highlight blends in
-#define NL_CLOUD_SHADE_STRENGTH 0.2  // Self-shading darkness on cloud undersides
+#define NL_CLOUD_SCROLL_SPEED 0.02
+#define NL_CLOUD_SCALE 8.0            // Overall cloud size — lower = bigger puffs
+#define NL_CLOUD_OCTAVES 4            // Noise detail layers — more = richer shape, more cost
+#define NL_CLOUD_COVERAGE 0.55        // How much of the sky is covered — higher = more clouds
+#define NL_CLOUD_SOFTNESS 0.12        // Edge softness — higher = fluffier, lower = more defined
+#define NL_CLOUD_WARP_STRENGTH 0.6    // Domain warp intensity — gives clouds their rounded, organic look
+#define NL_CLOUD_DETAIL_STRENGTH 0.15 // Small-scale texture/puffiness overlay
+#define NL_CLOUD_RIM_BRIGHTNESS 1.6
+#define NL_CLOUD_RIM_STRENGTH 0.5
+#define NL_CLOUD_SHADE_STRENGTH 0.3
 
 // ---------------------------------------------------
 // Sky color palette (Sky material)
