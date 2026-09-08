@@ -48,7 +48,7 @@ float nl_cloudDensity(vec2 p) {
 
 void main() {
     vec2 t = v_worldPos.xz * NL_CLOUD_SCROLL_SPEED;
-    vec2 uv = v_worldPos.xz * 0.01 * NL_CLOUD_SCALE * 0.1 + t;
+    vec2 uv = v_worldPos.xz * 0.015 + t;
 
     float density = nl_cloudDensity(uv);
 
