@@ -87,14 +87,13 @@
 // ---------------------------------------------------
 // Aurora (Sky material, night only)
 // ---------------------------------------------------
-#define NL_AURORA_ENABLED 1
-#define NL_AURORA_SPEED 0.05          // How fast the bands drift/shimmer over time
-#define NL_AURORA_SCALE 3.0           // How many ray bands wrap around the sky
-#define NL_AURORA_RAY_SHARPNESS 3.0   // Higher = thinner, more defined rays vs a soft blob
-#define NL_AURORA_HEIGHT_MIN 0.05     // Lowest point in the sky (viewDir.y) where aurora starts
-#define NL_AURORA_BRIGHTNESS 1.5
-#define NL_AURORA_COLOR_TOP vec3(0.3, 1.0, 0.9)     // Cyan — matches the top of your reference
-#define NL_AURORA_COLOR_BOTTOM vec3(0.6, 0.3, 1.0)  // Purple — matches the base glow
+#define NL_AURORA_BLOCK_COLUMNS 40.0   // Number of vertical block columns around the sky
+#define NL_AURORA_BLOCK_ROWS 6.0       // Number of block rows in the green section
+#define NL_AURORA_BLOCK_THRESHOLD 0.55 // Higher = fewer lit blocks, more gaps
+#define NL_AURORA_SCROLL_SPEED 0.05
+#define NL_AURORA_FLICKER_SPEED 0.3    // How often blocks randomly change on/off
+#define NL_AURORA_GREEN_COLOR vec3(0.1, 1.0, 0.5)
+#define NL_AURORA_PURPLE_COLOR vec3(0.6, 0.2, 1.0)
 
 // ---------------------------------------------------
 // Godrays (Sky material, sunset/sunrise only)
