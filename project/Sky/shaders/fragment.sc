@@ -15,10 +15,12 @@ float sqrt1(float x) { return sqrt(max(x, 0.0)); }
 
 vec3 nl_getAurora(vec3 vDir, float time, float dither) {
     float VdotU = clamp(vDir.y, 0.0, 1.0);
-    float visibility = sqrt1(clamp01(VdotU * 4.5 - 0.225));
-    visibility *= 2.0 - VdotU * 0.9;
 
-    if (visibility <= 1.0) return vec3(0.0);
+    // Real band: fades in low, peaks mid-sky, fades out again near zenith —
+    // not a near-permanent wash across the whole upper hemisphere.
+    float visibility = smoothstep(0.05, 0.35, VdotU) * (1.0 - smoothstep(0.75, 1.0, VdotU));
+
+    if (visibility <= 0.01) return vec3(0.0);
 
     vec3 aurora = vec3(0.0);
     vec3 wpos = vDir;
@@ -26,8 +28,8 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
     vec2 cameraPosM = vec2(0.0);
     cameraPosM.x += time * 2.0;
 
-    const int sampleCount = 16;
-    const int sampleCountP = sampleCount + 16;
+    const int sampleCount = 8;
+    const int sampleCountP = sampleCount + 8;
 
     float ditherM = dither + 9.0;
     float auroraAnimate = time * 0.01;
@@ -36,15 +38,19 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
         float current = pow2((float(i) + ditherM) / float(sampleCountP));
         vec2 planePos = wpos.xz * (0.8 + current) * 10.0 + cameraPosM;
         planePos *= 0.0007;
+
         float noise = texture(s_NoiseVoxel, planePos).r;
-        noise = pow2(pow2(1.0 - 0.8 * abs(noise - 0.5)));
-        noise *= texture(s_NoiseVoxel, planePos * 8.0 + auroraAnimate).b;
-        noise *= texture(s_NoiseVoxel, planePos * 1.0 - auroraAnimate).g;
+
+        // Predictable band selection — peaks sharply wherever noise sits near
+        // the midpoint, fades cleanly on both sides. Independent of the exact
+        // statistical spread of whatever texture is plugged in.
+        float band = smoothstep(0.35, 0.5, noise) * smoothstep(0.65, 0.5, noise);
+
         float currentM = 1.0 - current;
-        aurora += noise * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), pow2(pow2(currentM)));
+        aurora += band * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), currentM * currentM);
     }
 
-    aurora *= 3.8;
+    aurora *= 2.5;
     return aurora * visibility / float(sampleCount);
 }
 
