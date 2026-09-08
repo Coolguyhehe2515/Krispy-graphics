@@ -26,8 +26,8 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
     vec2 cameraPosM = vec2(0.0);
     cameraPosM.x += time * 2.0;
 
-    const int sampleCount = 6;
-    const int sampleCountP = sampleCount + 6;
+    const int sampleCount = 16;
+    const int sampleCountP = sampleCount + 16;
 
     float ditherM = dither + 9.0;
     float auroraAnimate = time * 0.01;
