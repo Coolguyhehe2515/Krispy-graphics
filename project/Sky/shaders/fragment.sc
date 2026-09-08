@@ -16,8 +16,6 @@ float sqrt1(float x) { return sqrt(max(x, 0.0)); }
 vec3 nl_getAurora(vec3 vDir, float time, float dither) {
     float VdotU = clamp(vDir.y, 0.0, 1.0);
 
-    // Real band: fades in low, peaks mid-sky, fades out again near zenith —
-    // not a near-permanent wash across the whole upper hemisphere.
     float visibility = smoothstep(0.05, 0.35, VdotU) * (1.0 - smoothstep(0.75, 1.0, VdotU));
 
     if (visibility <= 0.01) return vec3(0.0);
@@ -41,10 +39,14 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
 
         float noise = texture(s_NoiseVoxel, planePos).r;
 
-        // Predictable band selection — peaks sharply wherever noise sits near
-        // the midpoint, fades cleanly on both sides. Independent of the exact
-        // statistical spread of whatever texture is plugged in.
-        float band = smoothstep(0.35, 0.5, noise) * smoothstep(0.65, 0.5, noise);
+        // Sharper band edges — reads as distinct curtain shapes instead of a soft blob.
+        float band = smoothstep(0.42, 0.5, noise) * smoothstep(0.58, 0.5, noise);
+
+        // Vertical ray structure — carves the smooth band into distinct radiating
+        // strands, matching the classic "curtain of light rays" aurora look.
+        float rayPattern = sin(atan(wpos.x, wpos.z) * 12.0 + noise * 4.0);
+        rayPattern = pow(abs(rayPattern), 3.0);
+        band *= mix(0.4, 1.0, rayPattern);
 
         float currentM = 1.0 - current;
         aurora += band * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), currentM * currentM);
@@ -57,6 +59,11 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
 float nl_sunHeight(float timeOfDay) {
     float t = 2.0 * 3.14159265 * timeOfDay;
     return cos(t);
+}
+
+vec3 nl_sunDirection(float timeOfDay) {
+    float t = 2.0 * 3.14159265 * timeOfDay;
+    return normalize(vec3(sin(t), cos(t), 0.0));
 }
 
 float nl_dayFactorFromSun(float sunHeight) {
@@ -78,6 +85,34 @@ float nl_rainFactor(vec3 fogColor) {
 
 float nl_hash(float n) {
     return fract(sin(n) * 43758.5453123);
+}
+
+float nl_noise1D(float x) {
+    float i = floor(x);
+    float f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(nl_hash(i), nl_hash(i + 1.0), f);
+}
+
+// Sunset/sunrise light rays — concentrated around the sun's position, broken
+// into radial streaks, only visible during twilight when the sun sits low.
+vec3 nl_godrays(vec3 viewDir, vec3 sunDir, float twilight, float t) {
+    float sunDot = dot(viewDir, sunDir);
+    float raysMask = pow(clamp(sunDot, 0.0, 1.0), NL_GODRAY_SHARPNESS);
+
+    if (raysMask <= 0.001) return vec3(0.0);
+
+    vec3 tangent = normalize(cross(sunDir, vec3(0.0, 1.0, 0.0)) + vec3(0.0001));
+    vec3 bitangent = cross(sunDir, tangent);
+    float u = dot(viewDir, tangent);
+    float v = dot(viewDir, bitangent);
+    float angle = atan(v, u);
+
+    float streaks = nl_noise1D(angle * NL_GODRAY_STREAK_SCALE + t * 0.02);
+    streaks = pow(streaks, 2.0);
+
+    float intensity = raysMask * streaks * twilight;
+    return NL_GODRAY_COLOR * intensity * NL_GODRAY_BRIGHTNESS;
 }
 
 bool nl_shootingStarSpawn(float t, out float seed, out float cycle) {
@@ -121,6 +156,7 @@ void main() {
     blend = pow(blend, NL_SKY_HORIZON_SHARPNESS);
 
     float sunHeight = nl_sunHeight(TimeOfDay.x);
+    vec3 sunDir = nl_sunDirection(TimeOfDay.x);
     float dayFactor = nl_dayFactorFromSun(sunHeight);
     float twilight = nl_twilightFactorFromSun(sunHeight);
 
@@ -139,6 +175,12 @@ void main() {
 
     float rain = nl_rainFactor(FogColor.rgb);
     skyColor *= mix(1.0, 1.0 - NL_RAIN_DARKEN_STRENGTH, rain);
+
+    #if NL_GODRAY_ENABLED
+    if (twilight > 0.05 && rain < 0.3) {
+        skyColor += nl_godrays(viewDir, sunDir, twilight * (1.0 - rain), ViewPositionAndTime.w);
+    }
+    #endif
 
     #if NL_AURORA_ENABLED
     float dither = texture(s_NoiseVoxel, mod(gl_FragCoord.xy, 256.0) / 256.0).r;
