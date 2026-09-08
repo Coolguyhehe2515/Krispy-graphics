@@ -97,6 +97,15 @@
 #define NL_AURORA_COLOR_BOTTOM vec3(0.6, 0.3, 1.0)  // Purple — matches the base glow
 
 // ---------------------------------------------------
+// Godrays (Sky material, sunset/sunrise only)
+// ---------------------------------------------------
+#define NL_GODRAY_ENABLED 1
+#define NL_GODRAY_SHARPNESS 6.0        // Higher = tighter concentration around the sun
+#define NL_GODRAY_STREAK_SCALE 15.0    // Number of visible ray streaks
+#define NL_GODRAY_BRIGHTNESS 0.8
+#define NL_GODRAY_COLOR vec3(1.0, 0.85, 0.6)
+
+// ---------------------------------------------------
 // Terrain light tint (RenderChunk) — fixed palette, not raw FogColor
 // ---------------------------------------------------
 #define NL_LIGHT_DAY_COLOR       vec3(1.00, 1.00, 1.00)
