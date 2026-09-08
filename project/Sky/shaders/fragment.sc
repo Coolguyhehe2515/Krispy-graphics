@@ -26,8 +26,8 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
     vec2 cameraPosM = vec2(0.0);
     cameraPosM.x += time * 2.0;
 
-    const int sampleCount = 13;
-    const int sampleCountP = sampleCount + 13;
+    const int sampleCount = 14;
+    const int sampleCountP = sampleCount + 14;
 
     float ditherM = dither + 9.0;
     float auroraAnimate = time * 0.01;
@@ -39,14 +39,14 @@ vec3 nl_getAurora(vec3 vDir, float time, float dither) {
 
         float noise = texture(s_NoiseVoxel, planePos).r;
 
-        // Sharper band edges — reads as distinct curtain shapes instead of a soft blob.
-        float band = smoothstep(0.42, 0.5, noise) * smoothstep(0.58, 0.5, noise);
+        // Sharper, narrower band — crisper strand edges instead of a soft blob.
+        float band = smoothstep(0.46, 0.5, noise) * smoothstep(0.54, 0.5, noise);
 
-        // Vertical ray structure — carves the smooth band into distinct radiating
-        // strands, matching the classic "curtain of light rays" aurora look.
-        float rayPattern = sin(atan(wpos.x, wpos.z) * 12.0 + noise * 4.0);
-        rayPattern = pow(abs(rayPattern), 3.0);
-        band *= mix(0.4, 1.0, rayPattern);
+        // Stronger ray separation — more, thinner distinct strands with real
+        // gaps between them instead of smooth continuous curtains.
+        float rayPattern = sin(atan(wpos.x, wpos.z) * 20.0 + noise * 3.0);
+        rayPattern = pow(abs(rayPattern), 6.0);
+        band *= mix(0.15, 1.0, rayPattern);
 
         float currentM = 1.0 - current;
         aurora += band * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), currentM * currentM);
@@ -63,7 +63,7 @@ float nl_sunHeight(float timeOfDay) {
 
 vec3 nl_sunDirection(float timeOfDay) {
     float t = 2.0 * 3.14159265 * timeOfDay;
-    return normalize(vec3(sin(t), cos(t), 0.0));
+    return normalize(vec3(-sin(t), cos(t), 0.0)); // flipped to match east sunrise / west sunset
 }
 
 float nl_dayFactorFromSun(float sunHeight) {
@@ -94,8 +94,6 @@ float nl_noise1D(float x) {
     return mix(nl_hash(i), nl_hash(i + 1.0), f);
 }
 
-// Sunset/sunrise light rays — concentrated around the sun's position, broken
-// into radial streaks, only visible during twilight when the sun sits low.
 vec3 nl_godrays(vec3 viewDir, vec3 sunDir, float twilight, float t) {
     float sunDot = dot(viewDir, sunDir);
     float raysMask = pow(clamp(sunDot, 0.0, 1.0), NL_GODRAY_SHARPNESS);
