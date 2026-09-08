@@ -13,47 +13,48 @@ float pow2(float x) { return x * x; }
 float clamp01(float x) { return clamp(x, 0.0, 1.0); }
 float sqrt1(float x) { return sqrt(max(x, 0.0)); }
 
-vec3 nl_getAurora(vec3 vDir, float time, float dither) {
-    float VdotU = clamp(vDir.y, 0.0, 1.0);
+float nl_hash(float n) {
+    return fract(sin(n) * 43758.5453123);
+}
 
+float nl_noise1D(float x) {
+    float i = floor(x);
+    float f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(nl_hash(i), nl_hash(i + 1.0), f);
+}
+
+vec3 nl_getAurora(vec3 vDir, float time) {
+    float VdotU = clamp(vDir.y, 0.0, 1.0);
     float visibility = smoothstep(0.05, 0.35, VdotU) * (1.0 - smoothstep(0.75, 1.0, VdotU));
 
     if (visibility <= 0.01) return vec3(0.0);
 
-    vec3 aurora = vec3(0.0);
     vec3 wpos = vDir;
     wpos.xz /= max(wpos.y, 0.1);
-    vec2 cameraPosM = vec2(0.0);
-    cameraPosM.x += time * 2.0;
+    float angle = atan(wpos.x, wpos.z);
 
-    const int sampleCount = 14;
-    const int sampleCountP = sampleCount + 14;
+    // Normalized height within the visible band: 0 = bottom, 1 = top.
+    float heightT = clamp((VdotU - 0.05) / (0.70 - 0.05), 0.0, 1.0);
 
-    float ditherM = dither + 9.0;
-    float auroraAnimate = time * 0.01;
+    // --- Blocky green segments (hard-edged grid, no smoothing) ---
+    float col = floor(angle * NL_AURORA_BLOCK_COLUMNS / 6.28318 + time * NL_AURORA_SCROLL_SPEED);
+    float row = floor(heightT * NL_AURORA_BLOCK_ROWS);
+    float flicker = floor(time * NL_AURORA_FLICKER_SPEED);
 
-    for (int i = 0; i < sampleCount; i++) {
-        float current = pow2((float(i) + ditherM) / float(sampleCountP));
-        vec2 planePos = wpos.xz * (0.8 + current) * 10.0 + cameraPosM;
-        planePos *= 0.0007;
+    float blockNoise = nl_hash(col * 12.9898 + row * 78.233 + flicker * 37.7);
+    float blockActive = step(NL_AURORA_BLOCK_THRESHOLD, blockNoise);
 
-        float noise = texture(s_NoiseVoxel, planePos).r;
+    // Only appears in the lower portion of the band, fully hard-edged.
+    float greenZone = 1.0 - smoothstep(0.0, 0.5, heightT);
+    float green = blockActive * greenZone;
 
-        // Sharper, narrower band — crisper strand edges instead of a soft blob.
-        float band = smoothstep(0.46, 0.5, noise) * smoothstep(0.54, 0.5, noise);
+    // --- Smooth purple fade above the blocky section ---
+    float purple = smoothstep(0.3, 0.7, heightT) * (1.0 - smoothstep(0.85, 1.0, heightT));
 
-        // Stronger ray separation — more, thinner distinct strands with real
-        // gaps between them instead of smooth continuous curtains.
-        float rayPattern = sin(atan(wpos.x, wpos.z) * 20.0 + noise * 3.0);
-        rayPattern = pow(abs(rayPattern), 6.0);
-        band *= mix(0.15, 1.0, rayPattern);
+    vec3 color = NL_AURORA_GREEN_COLOR * green + NL_AURORA_PURPLE_COLOR * purple;
 
-        float currentM = 1.0 - current;
-        aurora += band * currentM * mix(vec3(0.65, 0.48, 1.05), vec3(0.0, 4.5, 3.0), currentM * currentM);
-    }
-
-    aurora *= 2.5;
-    return aurora * visibility / float(sampleCount);
+    return color * visibility;
 }
 
 float nl_sunHeight(float timeOfDay) {
@@ -63,7 +64,7 @@ float nl_sunHeight(float timeOfDay) {
 
 vec3 nl_sunDirection(float timeOfDay) {
     float t = 2.0 * 3.14159265 * timeOfDay;
-    return normalize(vec3(-sin(t), cos(t), 0.0)); // flipped to match east sunrise / west sunset
+    return normalize(vec3(-sin(t), cos(t), 0.0));
 }
 
 float nl_dayFactorFromSun(float sunHeight) {
@@ -81,17 +82,6 @@ float nl_rainFactor(vec3 fogColor) {
     float minC = min(fogColor.r, min(fogColor.g, fogColor.b));
     float saturation = maxC - minC;
     return clamp(1.0 - saturation * 6.0, 0.0, 1.0);
-}
-
-float nl_hash(float n) {
-    return fract(sin(n) * 43758.5453123);
-}
-
-float nl_noise1D(float x) {
-    float i = floor(x);
-    float f = fract(x);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(nl_hash(i), nl_hash(i + 1.0), f);
 }
 
 vec3 nl_godrays(vec3 viewDir, vec3 sunDir, float twilight, float t) {
@@ -181,9 +171,8 @@ void main() {
     #endif
 
     #if NL_AURORA_ENABLED
-    float dither = texture(s_NoiseVoxel, mod(gl_FragCoord.xy, 256.0) / 256.0).r;
     float auroraMask = (1.0 - rain) * max(1.0 - 3.0 * max(FogColor.g, FogColor.b), 0.0);
-    vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w, dither) * auroraMask;
+    vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w) * auroraMask;
     skyColor += aurora * NL_AURORA_BRIGHTNESS;
     #endif
 
