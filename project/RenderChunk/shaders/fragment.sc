@@ -208,8 +208,43 @@ vec4 applySeasons(vec3 vertexColor, float vertexAlpha, vec4 diffuse) {
     return diffuse;
 }
 #endif
+
+bool nl_detectUnderwater(vec3 fogColor, vec2 fogControl) {
+    return fogControl.x == 0.0 && fogControl.y < 0.8 && (fogColor.b > fogColor.r || fogColor.g > fogColor.r);
+}
+
+bool nl_detectLava(vec3 fogColor, vec2 fogControl) {
+    return fogControl.x == 0.0 && fogColor.b == 0.0 && fogColor.g < 0.18 && fogColor.r - fogColor.g > 0.1;
+}
+
+bool nl_detectNether(vec3 fogColor, vec2 fogControl) {
+    float expectedFogX = 0.029 + (0.09 * fogControl.y * fogControl.y);
+    bool netherFogCtrl = (fogControl.x < 0.14 && abs(fogControl.x - expectedFogX) < 0.02);
+    bool netherFogCol = (fogColor.r + fogColor.g) > 0.0;
+    return netherFogCtrl && netherFogCol;
+}
+
+bool nl_detectEnd(vec3 fogColor) {
+    return fogColor.r == fogColor.b && (fogColor.r - fogColor.g > 0.24 || (fogColor.g == 0.0 && fogColor.r > 0.1));
+}
+
 void RenderChunkApplyFog(FragmentInput fragInput, StandardSurfaceInput surfaceInput, StandardSurfaceOutput surfaceOutput, inout FragmentOutput fragOutput) {
-    fragOutput.Color0.rgb = applyFogVanilla(fragOutput.Color0.rgb, FogColor.rgb, surfaceInput.fog.a);
+    bool underwater = nl_detectUnderwater(FogColor.rgb, FogAndDistanceControl.xy);
+    bool lava = nl_detectLava(FogColor.rgb, FogAndDistanceControl.xy);
+
+    vec3 fogTint = FogColor.rgb;
+    float fogIntensity = surfaceInput.fog.a;
+
+    if (underwater) {
+        fogTint = mix(FogColor.rgb, NL_UNDERWATER_TINT, 0.6);
+        fogIntensity = max(fogIntensity, NL_UNDERWATER_FOG_DENSITY);
+    }
+    if (lava) {
+        fogTint = NL_LAVA_FOG_COLOR;
+        fogIntensity = max(fogIntensity, NL_LAVA_FOG_DENSITY);
+    }
+
+    fragOutput.Color0.rgb = applyFogVanilla(fragOutput.Color0.rgb, fogTint, fogIntensity);
 }
 #ifdef TRANSPARENT_PASS
 void RenderChunkSurfTransparent(in StandardSurfaceInput surfaceInput, inout StandardSurfaceOutput surfaceOutput) {
@@ -259,26 +294,17 @@ vec3 nl_lightTint(float timeOfDay) {
 }
 
 vec3 nl_colorGrade(vec3 color) {
-    // Saturation: push each channel away from luminance.
     float luma = dot(color, vec3(0.299, 0.587, 0.114));
     color = mix(vec3_splat(luma), color, NL_SATURATION);
-
-    // Contrast: push away from mid-gray.
     color = (color - 0.5) * NL_CONTRAST + 0.5;
-
     return clamp(color, 0.0, 1.0);
 }
 
-// Adds extra brightness at night only — scales down to zero as it gets closer to day,
-// so daytime lighting is completely unaffected.
 vec3 nl_nightBoost(vec3 light, float skyLight) {
     float nightAmount = 1.0 - clamp(skyLight * 1.3, 0.0, 1.0);
     return light + vec3_splat(NL_NIGHT_BRIGHTNESS_BOOST * nightAmount);
 }
 
-// Extended Reinhard tonemap — compresses bright values smoothly toward white
-// instead of hard-clipping at 1.0. NL_TONEMAP_WHITE_POINT controls how much
-// headroom exists before values start clipping to pure white.
 vec3 nl_extendedReinhard(vec3 color) {
     vec3 numerator = color * (1.0 + (color / vec3_splat(NL_TONEMAP_WHITE_POINT * NL_TONEMAP_WHITE_POINT)));
     return numerator / (1.0 + color);
@@ -288,14 +314,24 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     float skyLight = stdInput.lightmapUV.y;
     float blockLight = stdInput.lightmapUV.x;
 
-    // --- Ambient (sky-driven) lighting only, everything below is subject to color grading ---
-    vec3 ambient = nl_lightTint(TimeOfDay.x) * skyLight * NL_SKY_BRIGHTNESS;
+    bool isNether = nl_detectNether(FogColor.rgb, FogAndDistanceControl.xy);
+    bool isEnd = nl_detectEnd(FogColor.rgb);
+
+    vec3 skyTint;
+    if (isNether) {
+        skyTint = NL_NETHER_AMBIENT;
+    } else if (isEnd) {
+        skyTint = NL_END_AMBIENT;
+    } else {
+        skyTint = nl_lightTint(TimeOfDay.x);
+    }
+
+    vec3 ambient = skyTint * skyLight * NL_SKY_BRIGHTNESS;
 
     float lum = dot(ambient, vec3(0.299, 0.587, 0.114));
     ambient += vec3_splat(NL_MIN_LIGHTING_BOOST / (1.0 + lum));
     ambient *= NL_LIGHT_WARMTH;
 
-    // Rain darkening — reuse the same gray-sky detection as the Sky material.
     float maxC = max(FogColor.r, max(FogColor.g, FogColor.b));
     float minC = min(FogColor.r, min(FogColor.g, FogColor.b));
     float rain = clamp(1.0 - (maxC - minC) * 6.0, 0.0, 1.0);
@@ -306,19 +342,11 @@ vec3 computeLighting_RenderChunk(FragmentInput fragInput, StandardSurfaceInput s
     vec3 result = ambient * stdOutput.Albedo;
     result = nl_colorGrade(result);
 
-    // --- Torch light applied AFTER color grading ---
-    // Keeps torches consistently bright regardless of ambient brightness — applying
-    // contrast to torch light made it look dim at night (low ambient pushes it below
-    // the contrast midpoint) and bright during the day (high ambient pushes it above).
     vec3 torchLighting = NL_TORCH_COLOR * blockLight * blockLight * NL_TORCH_INTENSITY;
     result += torchLighting * stdOutput.Albedo;
 
-    // Ore glow also stays post-grade for the same reason — flagged via alpha ~253/255
-    // in the texture, see RenderChunkSurfOpaque for detection.
     result += stdOutput.Albedo * stdOutput.Emissive * NL_ORE_GLOW_STRENGTH;
 
-    // Tonemap replaces the old hard clamp — smoothly compresses bright spots
-    // (torch next to glowing ore, etc.) instead of clipping harshly.
     return nl_extendedReinhard(result);
 }
 #if defined(ALPHA_TEST_PASS)|| defined(DEPTH_ONLY_PASS)
@@ -346,8 +374,6 @@ void RenderChunkSurfOpaque(in StandardSurfaceInput surfaceInput, inout StandardS
     #ifdef OPAQUE_PASS
     vec4 diffuse = textureSample(s_MatTexture, surfaceInput.UV);
 
-    // Check for the glow flag BEFORE alpha gets overwritten below — vanilla opaque
-    // textures are otherwise always alpha 1.0, so a value near 253/255 is our signal.
     float glowFlag = abs(diffuse.a - NL_GLOW_ALPHA_FLAG) < NL_GLOW_ALPHA_TOLERANCE ? 1.0 : 0.0;
     #endif
     #if defined(OPAQUE_PASS)&& defined(SEASONS__OFF)
