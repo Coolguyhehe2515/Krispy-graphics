@@ -1,10 +1,9 @@
-$input v_color0, v_texcoord0, v_worldPos
+$input v_worldPos
 precision highp float;
 #include "bgfx_shader.sh"
 #include "settings.h"
 
 SAMPLER2D_AUTOREG(s_SkyTexture);
-uniform vec4 SkyColor;
 
 void main() {
     vec3 dir = normalize(v_worldPos);
@@ -17,7 +16,6 @@ void main() {
     equirectUV.y = 0.5 - (latitude / 3.14159265);
 
     vec4 texColor = texture(s_SkyTexture, equirectUV);
-    vec4 result = SkyColor * texColor;
-    result.rgb *= NL_ENDSKY_TINT * NL_ENDSKY_BRIGHTNESS;
-    gl_FragColor = vec4(result.rgb, result.a);
+    vec3 result = texColor.rgb * NL_ENDSKY_TINT * NL_ENDSKY_BRIGHTNESS;
+    gl_FragColor = vec4(result, texColor.a);
 }
