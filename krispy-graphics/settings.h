@@ -36,6 +36,16 @@
 #define NL_ENDSKY_TINT vec3(1.0, 1.0, 1.0)
 
 // ---------------------------------------------------
+// Dimension tints & special fog (RenderChunk fragment)
+// ---------------------------------------------------
+#define NL_NETHER_AMBIENT vec3(0.169, 0.004, 0.004)
+#define NL_END_AMBIENT vec3(0.99, 0.98, 0.99)
+#define NL_UNDERWATER_TINT vec3(0.1, 0.35, 0.55)
+#define NL_UNDERWATER_FOG_DENSITY 0.35
+#define NL_LAVA_FOG_COLOR vec3(1.0, 0.35, 0.05)
+#define NL_LAVA_FOG_DENSITY 0.75
+
+// ---------------------------------------------------
 // Color grading (RenderChunk fragment, final output)
 // ---------------------------------------------------
 #define NL_SATURATION 1.25   // 1.0 = no change, higher = more vivid colors
