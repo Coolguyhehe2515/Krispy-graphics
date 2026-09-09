@@ -87,12 +87,14 @@ Everything in there gets copied straight into the final pack during the build �
 - [Newb Shader](https://github.com/devendrn/newb-x-mcbe) by devendrn — primary inspiration
 - [Lazurite](https://github.com/veka0/lazurite) by veka0 — the shader build tool this project relies on
 - [mcbe-shader-codebase](https://github.com/veka0/mcbe-shader-codebase) by veka0 — restored vanilla material reference
+- Iteration t panaroma by Mr sangg
 
 #  inspirations
 
 - Newb shader
 - Complementary reimagined
 - Newb x feathered
+- Iteration t shader
 
 ## License
 
