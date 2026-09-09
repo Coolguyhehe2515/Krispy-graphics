@@ -98,13 +98,14 @@
 // Aurora (Sky material, night only)
 // ---------------------------------------------------
 #define NL_AURORA_ENABLED 1
-#define NL_AURORA_BLOCK_COLUMNS 40.0   // Number of vertical block columns around the sky
-#define NL_AURORA_BLOCK_ROWS 6.0       // Number of block rows in the green section
-#define NL_AURORA_BLOCK_THRESHOLD 0.55 // Higher = fewer lit blocks, more gaps
+#define NL_AURORA_BLOCK_COLUMNS 40.0
+#define NL_AURORA_BLOCK_ROWS 6.0
+#define NL_AURORA_BLOCK_THRESHOLD 0.55
 #define NL_AURORA_SCROLL_SPEED 0.05
-#define NL_AURORA_FLICKER_SPEED 0.3    // How often blocks randomly change on/off
+#define NL_AURORA_FLICKER_SPEED 0.3
 #define NL_AURORA_GREEN_COLOR vec3(0.1, 1.0, 0.5)
 #define NL_AURORA_PURPLE_COLOR vec3(0.6, 0.2, 1.0)
+#define NL_AURORA_BRIGHTNESS 1.2
 
 // ---------------------------------------------------
 // Godrays (Sky material, sunset/sunrise only)
