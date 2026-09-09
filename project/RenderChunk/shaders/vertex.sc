@@ -179,34 +179,23 @@ float RenderChunkVert(
 
     vertOutput.texcoord0 = decodedUV;
 
-    #ifdef ALPHA_TEST_PASS
+    // Plant/foliage wave — gated to billboarded alpha-tested geometry only
+    // (grass, flowers, saplings, etc.) so real 3D geometry like doors and
+    // trapdoors, which also render in ALPHA_TEST_PASS but are never
+    // billboarded, don't get swept up into the sway.
+    #if defined(ALPHA_TEST_PASS) && defined(RENDER_AS_BILLBOARDS__ON)
     if (cameraDepth < NL_WAVE_MAX_DISTANCE) {
-        float waveTime =
-            ViewPositionAndTime.w;
-
-        float heightFrac =
-            fract(stdInput.worldPos.y + 0.001);
-
-        float waveStrength =
-            heightFrac * NL_WAVE_AMPLITUDE;
-
-        float wave =
-            sin(
-                waveTime * NL_WAVE_SPEED +
-                stdInput.worldPos.x * NL_WAVE_FREQ +
-                stdInput.worldPos.z * NL_WAVE_FREQ
-            );
-
-        stdInput.worldPos.x +=
-            wave * waveStrength;
-
-        stdInput.worldPos.z +=
-            cos(
-                waveTime * NL_WAVE_SPEED +
-                stdInput.worldPos.x
-            ) *
-            waveStrength *
-            0.5;
+        float waveTime = ViewPositionAndTime.w;
+        float heightFrac = fract(stdInput.worldPos.y + 0.001);
+        float waveStrength = heightFrac * NL_WAVE_AMPLITUDE;
+        // Bound coordinates before sin() — raw world coordinates can grow
+        // large enough to lose float precision on mobile GPUs, which made
+        // the wave visually speed up/glitch as the camera moved around.
+        float wx = mod(stdInput.worldPos.x, 1000.0);
+        float wz = mod(stdInput.worldPos.z, 1000.0);
+        float wave = sin(waveTime * NL_WAVE_SPEED + wx * NL_WAVE_FREQ + wz * NL_WAVE_FREQ);
+        stdInput.worldPos.x += wave * waveStrength;
+        stdInput.worldPos.z += cos(waveTime * NL_WAVE_SPEED + wx) * waveStrength * 0.5;
     }
     #endif
 
@@ -216,42 +205,32 @@ float RenderChunkVert(
         stdInput.vertInput.color0.a < 0.95;
 
     if (isWater) {
-        float waveTime =
-            ViewPositionAndTime.w;
-
-        float waterWave =
-            sin(
-                waveTime * NL_WATER_WAVE_SPEED +
-                stdInput.worldPos.x * 1.2 +
-                stdInput.worldPos.z * 1.2
-            );
-
-        stdInput.worldPos.y +=
-            waterWave * NL_WATER_WAVE_HEIGHT;
+        float waveTime = ViewPositionAndTime.w;
+        float wx = mod(stdInput.worldPos.x, 1000.0);
+        float wz = mod(stdInput.worldPos.z, 1000.0);
+        float waterWave = sin(waveTime * NL_WATER_WAVE_SPEED + wx * 1.2 + wz * 1.2);
+        stdInput.worldPos.y += waterWave * NL_WATER_WAVE_HEIGHT;
     }
     #endif
 
     #ifdef OPAQUE_PASS
+    // Widened the Y-fraction band — the original 0.002-wide window
+    // (0.889-0.891) was too thin to reliably survive floating-point
+    // precision loss through the vertex transform pipeline, which is
+    // why lava never appeared to wave at all.
     bool isLava =
         (stdInput.vertInput.color0.r +
          stdInput.vertInput.color0.g +
          stdInput.vertInput.color0.b) > 2.999 &&
-        fract(stdInput.worldPos.y) > 0.889 &&
-        fract(stdInput.worldPos.y) < 0.891;
+        fract(stdInput.worldPos.y) > 0.80 &&
+        fract(stdInput.worldPos.y) < 1.0;
 
     if (isLava) {
-        float waveTime =
-            ViewPositionAndTime.w;
-
-        float lavaWave =
-            sin(
-                waveTime * NL_LAVA_WAVE_SPEED +
-                stdInput.worldPos.x * 0.8 +
-                stdInput.worldPos.z * 0.8
-            );
-
-        stdInput.worldPos.y +=
-            lavaWave * NL_LAVA_WAVE_HEIGHT;
+        float waveTime = ViewPositionAndTime.w;
+        float wx = mod(stdInput.worldPos.x, 1000.0);
+        float wz = mod(stdInput.worldPos.z, 1000.0);
+        float lavaWave = sin(waveTime * NL_LAVA_WAVE_SPEED + wx * 0.8 + wz * 0.8);
+        stdInput.worldPos.y += lavaWave * NL_LAVA_WAVE_HEIGHT;
     }
     #endif
 
