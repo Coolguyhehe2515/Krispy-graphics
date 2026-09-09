@@ -62,7 +62,7 @@ Change these values, push, and the next Actions build reflects your edits — no
 If you're planning to publish your variant, update:
 
 - `pack/manifest.json` — change `"name"` and `"description"` under `header`, and generate new UUIDs so your pack doesn't conflict with other installations.
-- This README — swap in your own name and credits while keeping the Newb Shader attribution intact.
+- This README — swap in your own name and credits .
 
 ### 4. Going further — editing shader logic
 
@@ -81,6 +81,9 @@ These are BGFX shader (`.sc`) files compiled via Lazurite + shaderc, not raw GLS
 Drop any custom textures, sounds, or a `pack_icon.png` into the `assets/` folder at the repo root.
 
 Everything in there gets copied straight into the final pack during the build — no `.yml` changes needed.
+NOTE:you need to use this name template
+krispy-graphics (your variant name)
+
 
 ## Credits
 
