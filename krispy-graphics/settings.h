@@ -97,6 +97,7 @@
 // ---------------------------------------------------
 // Aurora (Sky material, night only)
 // ---------------------------------------------------
+#define NL_AURORA_ENABLED 1
 #define NL_AURORA_BLOCK_COLUMNS 40.0   // Number of vertical block columns around the sky
 #define NL_AURORA_BLOCK_ROWS 6.0       // Number of block rows in the green section
 #define NL_AURORA_BLOCK_THRESHOLD 0.55 // Higher = fewer lit blocks, more gaps
@@ -110,7 +111,7 @@
 // ---------------------------------------------------
 #define NL_GODRAY_ENABLED 1
 #define NL_GODRAY_SHARPNESS 6.0        // Higher = tighter concentration around the sun
-#define NL_GODRAY_STREAK_SCALE 15.0    // Number of visible ray streaks
+#define NL_GODRAY_STREAK_SCALE 8.0    // Number of visible ray streaks
 #define NL_GODRAY_BRIGHTNESS 0.8
 #define NL_GODRAY_COLOR vec3(1.0, 0.85, 0.6)
 
