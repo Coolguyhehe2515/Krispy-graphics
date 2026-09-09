@@ -37,10 +37,15 @@ vec3 nl_getAurora(vec3 vDir, float time) {
     // Normalized height within the visible band: 0 = bottom, 1 = top.
     float heightT = clamp((VdotU - 0.05) / (0.70 - 0.05), 0.0, 1.0);
 
+    // Keep time-based values bounded — sin()-based hashing loses precision
+    // badly on mobile GPUs once the input grows into the thousands, which
+    // silently breaks randomness (everything evaluates the same way).
+    float boundedTime = mod(time, 1000.0);
+
     // --- Blocky green segments (hard-edged grid, no smoothing) ---
-    float col = floor(angle * NL_AURORA_BLOCK_COLUMNS / 6.28318 + time * NL_AURORA_SCROLL_SPEED);
+    float col = floor(angle * NL_AURORA_BLOCK_COLUMNS / 6.28318 + boundedTime * NL_AURORA_SCROLL_SPEED);
     float row = floor(heightT * NL_AURORA_BLOCK_ROWS);
-    float flicker = floor(time * NL_AURORA_FLICKER_SPEED);
+    float flicker = floor(boundedTime * NL_AURORA_FLICKER_SPEED);
 
     float blockNoise = nl_hash(col * 12.9898 + row * 78.233 + flicker * 37.7);
     float blockActive = step(NL_AURORA_BLOCK_THRESHOLD, blockNoise);
@@ -171,10 +176,10 @@ void main() {
     #endif
 
     #if NL_AURORA_ENABLED
-     float auroraMask = (1.0 - rain) * max(1.0 - 3.0 * max(FogColor.g, FogColor.b), 0.0);
-     vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w) * auroraMask;
-     skyColor += aurora * NL_AURORA_BRIGHTNESS;
-     #endif
+    float auroraMask = (1.0 - rain) * max(1.0 - 3.0 * max(FogColor.g, FogColor.b), 0.0);
+    vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w) * auroraMask;
+    skyColor += aurora * NL_AURORA_BRIGHTNESS;
+    #endif
 
     #if NL_SHOOTING_STAR_ENABLED
     if (dayFactor < 0.15 && rain < 0.3) {
