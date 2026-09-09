@@ -10,10 +10,18 @@
     },
     "events": {
       "spawn_krispy_splash": {
-        "particle_effect": {
-          "effect": "krispygraphics:rain_splash",
-          "type": "particle"
-        }
+        "randomize": [
+          {
+            "weight": 4,
+            "particle_effect": {
+              "effect": "krispygraphics:rain_splash",
+              "type": "particle"
+            }
+          },
+          {
+            "weight": 6
+          }
+        ]
       }
     },
     "components": {
