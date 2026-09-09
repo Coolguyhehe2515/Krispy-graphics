@@ -26,40 +26,56 @@ float nl_noise1D(float x) {
 
 vec3 nl_getAurora(vec3 vDir, float time) {
     float VdotU = clamp(vDir.y, 0.0, 1.0);
-    float visibility = smoothstep(0.05, 0.35, VdotU) * (1.0 - smoothstep(0.75, 1.0, VdotU));
+    float visibility = smoothstep(0.05, 0.30, VdotU) * (1.0 - smoothstep(0.80, 1.0, VdotU));
 
     if (visibility <= 0.01) return vec3(0.0);
 
     vec3 wpos = vDir;
     wpos.xz /= max(wpos.y, 0.1);
     float angle = atan(wpos.x, wpos.z);
-
-    // Normalized height within the visible band: 0 = bottom, 1 = top.
-    float heightT = clamp((VdotU - 0.05) / (0.70 - 0.05), 0.0, 1.0);
-
-    // Keep time-based values bounded — sin()-based hashing loses precision
-    // badly on mobile GPUs once the input grows into the thousands, which
-    // silently breaks randomness (everything evaluates the same way).
     float boundedTime = mod(time, 1000.0);
 
-    // --- Blocky green segments (hard-edged grid, no smoothing) ---
-    float col = floor(angle * NL_AURORA_BLOCK_COLUMNS / 6.28318 + boundedTime * NL_AURORA_SCROLL_SPEED);
-    float row = floor(heightT * NL_AURORA_BLOCK_ROWS);
-    float flicker = floor(boundedTime * NL_AURORA_FLICKER_SPEED);
+    float heightT = clamp((VdotU - 0.05) / (0.75 - 0.05), 0.0, 1.0);
 
-    float blockNoise = nl_hash(col * 12.9898 + row * 78.233 + flicker * 37.7);
-    float blockActive = step(NL_AURORA_BLOCK_THRESHOLD, blockNoise);
+    vec3 aurora = vec3(0.0);
+    const int LAYERS = 5;
 
-    // Only appears in the lower portion of the band, fully hard-edged.
-    float greenZone = 1.0 - smoothstep(0.0, 0.5, heightT);
-    float green = blockActive * greenZone;
+    for (int i = 0; i < LAYERS; i++) {
+        float fi = float(i);
+        float layerDepth = fi / float(LAYERS - 1); // 0 = near, 1 = far
 
-    // --- Smooth purple fade above the blocky section ---
-    float purple = smoothstep(0.3, 0.7, heightT) * (1.0 - smoothstep(0.85, 1.0, heightT));
+        // Each layer scrolls at a slightly different speed — this is what
+        // creates the illusion of depth (parallax) without real 3D geometry.
+        float layerAngle = angle + boundedTime * (0.03 + layerDepth * 0.04);
 
-    vec3 color = NL_AURORA_GREEN_COLOR * green + NL_AURORA_PURPLE_COLOR * purple;
+        float colCount = mix(NL_AURORA_BLOCK_COLUMNS * 0.6, NL_AURORA_BLOCK_COLUMNS, layerDepth);
+        float col = floor(layerAngle * colCount / 6.28318);
+        float colFrac = fract(layerAngle * colCount / 6.28318);
 
-    return color * visibility;
+        // Randomized width per beam column — matches the reference's varying shaft widths.
+        float beamWidth = mix(0.5, 0.25, nl_hash(col * 3.1 + fi * 17.7));
+        float beam = 1.0 - smoothstep(beamWidth * 0.5, beamWidth * 0.5 + 0.06, abs(colFrac - 0.5));
+
+        // Each beam has its own random height limit — jagged top silhouette
+        // instead of a flat cutoff line, matching the reference's uneven curtain top.
+        float beamHeightLimit = mix(0.35, 1.0, nl_hash(col * 7.3 + fi * 2.1));
+        float beamVertical = 1.0 - smoothstep(beamHeightLimit - 0.15, beamHeightLimit, heightT);
+
+        // Random on/off flicker per column, per layer.
+        float beamActive = step(NL_AURORA_BLOCK_THRESHOLD, nl_hash(col * 12.9 + fi * 4.4 + floor(boundedTime * NL_AURORA_FLICKER_SPEED)));
+
+        float layerMask = beam * beamVertical * beamActive;
+
+        // Teal near the top of each individual beam, purple toward its own base —
+        // matches the reference's per-shaft gradient rather than a flat sky-wide fade.
+        vec3 layerColor = mix(NL_AURORA_PURPLE_COLOR, NL_AURORA_GREEN_COLOR, clamp(heightT / max(beamHeightLimit, 0.01), 0.0, 1.0));
+
+        float layerWeight = mix(1.0, 0.4, layerDepth); // nearer layers read stronger
+        aurora += layerColor * layerMask * layerWeight;
+    }
+
+    aurora /= float(LAYERS);
+    return aurora * visibility;
 }
 
 float nl_sunHeight(float timeOfDay) {
