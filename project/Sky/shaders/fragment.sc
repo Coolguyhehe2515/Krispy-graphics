@@ -172,8 +172,7 @@ void main() {
 
     #if NL_AURORA_ENABLED
     float auroraMask = (1.0 - rain) * max(1.0 - 3.0 * max(FogColor.g, FogColor.b), 0.0);
-    vec3 aurora = nl_getAurora(viewDir, ViewPositionAndTime.w) * auroraMask;
-    skyColor += aurora * NL_AURORA_BRIGHTNESS;
+    skyColor += nl_getAurora(viewDir, ViewPositionAndTime.w) + vec3(0.2, 0.0, 0.2);
     #endif
 
     #if NL_SHOOTING_STAR_ENABLED
